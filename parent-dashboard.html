@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Parent Dashboard — PeerScholars</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div class="top-bar">Affordable tutoring for K–8 students · Verified high school tutors · $8–16/hour</div>
+  <header class="site-header">
+    <nav class="nav container">
+      <a href="index.html" class="logo"><span class="logo-icon">PS</span>PeerScholars</a>
+      <button class="nav-toggle" aria-label="Open menu" aria-expanded="false"><span></span><span></span><span></span></button>
+      <div class="nav-center">
+        <a href="index.html">Home</a><a href="index.html#why-us">Why Us</a><a href="demo.html">App Demo</a><a href="mission.html">Our Cause</a><a href="founder.html">Our Founder</a><a href="pricing.html">Pricing</a>
+        <a href="parent-dashboard.html">Parent Dashboard</a><a href="for-tutors.html">For Tutors</a>
+      </div>
+      <div class="nav-right"><a href="signup.html" class="btn btn-small btn-primary">Sign Up</a></div>
+    </nav>
+  </header>
+
+  <main>
+    <section class="page-hero page-hero-split compact">
+      <div class="container hero-split-inner">
+        <div>
+          <p class="eyebrow">Parent Dashboard · Demo</p>
+          <h1>Track your child's progress</h1>
+          <p>This is a demo of what parents see — attendance, schedules, session reports, and progress over time.</p>
+        </div>
+        <figure class="site-photo">
+          <img src="images/parent-laptop.png" alt="Parent and child using a laptop together at home">
+          <figcaption class="photo-caption">Stay connected to your child's learning from home</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="section section-alt" style="padding-top:2rem;">
+      <div class="container">
+        <div class="dashboard-layout">
+          <aside class="dashboard-sidebar">
+            <h3>Menu</h3>
+            <ul class="dashboard-nav">
+              <li><a href="#" class="active">Overview</a></li>
+              <li><a href="#">Schedule</a></li>
+              <li><a href="#">Progress Reports</a></li>
+              <li><a href="#">Attendance</a></li>
+              <li><a href="#">Messages</a></li>
+              <li><a href="#">Settings</a></li>
+            </ul>
+            <div style="margin-top:2rem;padding:1rem;background:var(--blue-100);border-radius:var(--radius-sm);">
+              <p style="font-size:0.8rem;font-weight:800;">Child profile</p>
+              <p style="font-weight:800;margin-top:0.25rem;">Your child · Grade —</p>
+              <p style="font-size:0.8rem;color:var(--text-light);">Tutor: Not matched yet</p>
+            </div>
+          </aside>
+
+          <div class="dashboard-main">
+            <div class="dashboard-stats">
+              <div class="stat-card"><div class="num">—</div><div class="lbl">Sessions completed</div></div>
+              <div class="stat-card green"><div class="num">—</div><div class="lbl">Attendance rate</div></div>
+              <div class="stat-card green"><div class="num">—</div><div class="lbl">Next session</div></div>
+              <div class="stat-card green"><div class="num">$8–16</div><div class="lbl">Pricing tiers / hr</div></div>
+            </div>
+
+            <div class="card">
+              <h3 style="margin-bottom:1rem;">Subject progress</h3>
+              <p style="color:var(--text-light);font-size:0.9375rem;">Progress by subject will appear here after your child's first sessions.</p>
+            </div>
+
+            <div class="card">
+              <h3 style="margin-bottom:0.75rem;">Recent sessions &amp; reports</h3>
+              <p style="color:var(--text-light);font-size:0.9375rem;">Session history and tutor reports will show up here once tutoring begins.</p>
+            </div>
+
+            <div class="card">
+              <h3 style="margin-bottom:0.75rem;">Attendance this month</h3>
+              <p style="color:var(--text-light);font-size:0.9375rem;">Weekly attendance will be tracked here after you start.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="cta-banner" style="margin-top:2.5rem;">
+          <h2>Want your own dashboard?</h2>
+          <p>Sign up as a parent and we'll set everything up when we call you.</p>
+          <a href="signup.html" class="btn btn-primary">Start Now — Sign Up</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div class="footer-brand"><a href="index.html" class="logo"><span class="logo-icon">PS</span>PeerScholars</a></div>
+      <div class="footer-links"><h4>Explore</h4><a href="demo.html">App Demo</a><a href="mission.html">Our Cause</a></div>
+      <div class="footer-links"><h4>Families</h4><a href="pricing.html">Pricing</a><a href="signup.html">Sign Up</a></div>
+      <div class="footer-links"><h4>Tutors</h4><a href="for-tutors.html">Become a Tutor</a></div>
+    </div>
+    <div class="container footer-bottom"><p>&copy; 2026 PeerScholars.</p></div>
+  </footer>
+  <script src="js/main.js"></script>
+</body>
+</html>
