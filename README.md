@@ -1,19 +1,41 @@
 # PeerScholars
 
-Multi-page website for PeerScholars — peer tutoring where verified high school students help K–8 learners.
+Peer-to-peer tutoring platform website — high school students tutor K–8 learners.
+
+**Live site:** https://peerscholars.com  
+**GitHub:** https://github.com/srihari-cit/PeerScholars  
+**Support:** support@peerscholars.com
 
 ## Pages
 
-| Page | File | Description |
-|------|------|-------------|
-| Home | `index.html` | Parent reviews first, hero, quick links |
-| App Demo | `demo.html` | How to sign up and use the app |
-| Our Cause | `mission.html` | Problem, solution, benefits, vs Kumon/Khan/IXL |
-| How It Works | `how-it-works.html` | Full 4-step process |
-| Pricing | `pricing.html` | $8 or $16/hr tax-bracket tiers |
-| Parent Dashboard | `parent-dashboard.html` | Demo dashboard for tracking progress |
-| For Tutors | `for-tutors.html` | High school volunteer info |
-| Sign Up | `signup.html` | Full form with phone number |
+| Page | File |
+|------|------|
+| Home | `index.html` |
+| Sign Up | `signup.html` |
+| For Tutors | `for-tutors.html` |
+| Pricing | `pricing.html` |
+| Parent Dashboard (demo) | `parent-dashboard.html` |
+| App Demo | `demo.html` |
+| Our Cause | `mission.html` |
+| Our Founder | `founder.html` |
+
+## Sign-up emails
+
+Parent and tutor sign-ups on `signup.html` are sent to **support@peerscholars.com** via FormSubmit.
+
+After the first submission, check that inbox for a FormSubmit **activation link** and click it once.
+
+## Deploy to Hostinger
+
+See **[DEPLOY-HOSTINGER.md](DEPLOY-HOSTINGER.md)** for step-by-step instructions to upload to `public_html` on peerscholars.com.
+
+## Push to GitHub
+
+```bash
+git push -u origin main
+```
+
+If the repo is empty on GitHub, create it first at https://github.com/srihari-cit/PeerScholars (public, no README).
 
 ## View locally
 
@@ -22,7 +44,3 @@ Open `index.html` in your browser, or run:
 ```bash
 npx serve .
 ```
-
-## Deploy
-
-Upload the folder to Netlify, Vercel, or GitHub Pages for a live URL.
