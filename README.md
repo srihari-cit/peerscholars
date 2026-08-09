@@ -29,14 +29,6 @@ After the first submission, check that inbox for a FormSubmit **activation link*
 
 See **[DEPLOY-HOSTINGER.md](DEPLOY-HOSTINGER.md)** for step-by-step instructions to upload to `public_html` on peerscholars.com.
 
-## Push to GitHub
-
-```bash
-git push -u origin main
-```
-
-If the repo is empty on GitHub, create it first at https://github.com/srihari-cit/PeerScholars (public, no README).
-
 ## View locally
 
 Open `index.html` in your browser, or run:
