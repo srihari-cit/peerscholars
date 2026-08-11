@@ -28,7 +28,7 @@
       <div class="container">
         <p class="eyebrow">Get Started</p>
         <h1>Sign up — we'll call you when we're free</h1>
-        <p>Fill out the form below with your phone number and details. Our team will reach out to finish setup and find your perfect match.</p>
+        <p id="signup-intro">Choose whether you're a family looking for a tutor, or a high school student who wants to tutor.</p>
       </div>
     </section>
 
@@ -43,106 +43,167 @@
 
     <section class="section" style="padding-top:1rem;">
       <div class="container form-page">
-        <form class="form-card" id="signup-form">
+        <div class="form-card" id="role-picker-card">
+          <p class="form-divider" style="margin-top:0;">Who are you signing up as?</p>
+          <div class="signup-role-picker">
+            <button type="button" class="signup-role-btn" data-role="family">
+              <span class="role-icon" aria-hidden="true">👨‍👩‍👧</span>
+              <span>Student / Family</span>
+              <span class="role-desc">Parent or guardian looking for a tutor</span>
+            </button>
+            <button type="button" class="signup-role-btn" data-role="tutor">
+              <span class="role-icon" aria-hidden="true">🎓</span>
+              <span>Tutor</span>
+              <span class="role-desc">High school student who wants to teach</span>
+            </button>
+          </div>
+        </div>
+
+        <form class="form-card" id="signup-form" hidden>
           <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
-          <div class="form-row">
-            <label for="role">I am signing up as *</label>
-            <select id="role" name="role" required>
-              <option value="">Select one</option>
-              <option value="parent">Parent / Guardian (looking for a tutor)</option>
-              <option value="tutor">High School Student (want to tutor)</option>
-            </select>
+          <input type="hidden" name="role" id="role-input" value="">
+
+          <button type="button" class="signup-back" id="signup-back">← Choose a different sign-up type</button>
+
+          <!-- Family / Student form -->
+          <div id="family-fields" hidden>
+            <p class="form-divider" style="margin-top:0;">Parent / guardian info</p>
+
+            <div class="form-row half">
+              <div class="form-row" style="margin-bottom:0;">
+                <label for="parent-first-name">Parent first name *</label>
+                <input type="text" id="parent-first-name" name="parent-first-name" placeholder="Jane">
+              </div>
+              <div class="form-row" style="margin-bottom:0;">
+                <label for="parent-last-name">Parent last name *</label>
+                <input type="text" id="parent-last-name" name="parent-last-name" placeholder="Smith">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <label for="family-phone">Phone number * <span style="font-weight:600;color:var(--text-light);">(we'll call you)</span></label>
+              <input type="tel" id="family-phone" name="phone" placeholder="(555) 123-4567">
+            </div>
+
+            <div class="form-row">
+              <label for="family-email">Email address *</label>
+              <input type="email" id="family-email" name="email" placeholder="you@email.com">
+            </div>
+
+            <div class="form-divider">Student info</div>
+
+            <div class="form-row half">
+              <div class="form-row" style="margin-bottom:0;">
+                <label for="child-first-name">Child first name *</label>
+                <input type="text" id="child-first-name" name="child-first-name" placeholder="Emma">
+              </div>
+              <div class="form-row" style="margin-bottom:0;">
+                <label for="child-last-name">Child last name *</label>
+                <input type="text" id="child-last-name" name="child-last-name" placeholder="Smith">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <label for="subjects-needed">Subject(s) of help *</label>
+              <input type="text" id="subjects-needed" name="subjects-needed" placeholder="Math, Reading, Science...">
+            </div>
+
+            <div class="form-row">
+              <label for="interests">Interests &amp; hobbies *</label>
+              <input type="text" id="interests" name="interests" placeholder="Soccer, art, Minecraft, baking...">
+            </div>
+
+            <div class="form-row">
+              <label>What days can we reach you? * <span style="font-weight:600;color:var(--text-light);">(select all that apply)</span></label>
+              <div class="checkbox-grid" data-day-group="family">
+                <label><input type="checkbox" name="reach-days" value="Monday"> Monday</label>
+                <label><input type="checkbox" name="reach-days" value="Tuesday"> Tuesday</label>
+                <label><input type="checkbox" name="reach-days" value="Wednesday"> Wednesday</label>
+                <label><input type="checkbox" name="reach-days" value="Thursday"> Thursday</label>
+                <label><input type="checkbox" name="reach-days" value="Friday"> Friday</label>
+                <label><input type="checkbox" name="reach-days" value="Saturday"> Saturday</label>
+                <label><input type="checkbox" name="reach-days" value="Sunday"> Sunday</label>
+              </div>
+            </div>
           </div>
 
-          <div class="form-row half">
-            <div class="form-row" style="margin-bottom:0;">
-              <label for="first-name">First name *</label>
-              <input type="text" id="first-name" name="first-name" placeholder="Jane" required>
-            </div>
-            <div class="form-row" style="margin-bottom:0;">
-              <label for="last-name">Last name *</label>
-              <input type="text" id="last-name" name="last-name" placeholder="Smith" required>
-            </div>
-          </div>
+          <!-- Tutor form -->
+          <div id="tutor-fields" hidden>
+            <p class="form-divider" style="margin-top:0;">Tutor info</p>
 
-          <div class="form-row">
-            <label for="phone">Phone number * <span style="font-weight:600;color:var(--text-light);">(we'll call you)</span></label>
-            <input type="tel" id="phone" name="phone" placeholder="(555) 123-4567" required>
-          </div>
-
-          <div class="form-row">
-            <label for="email">Email address *</label>
-            <input type="email" id="email" name="email" placeholder="you@email.com" required>
-          </div>
-
-          <div class="form-row half">
-            <div class="form-row" style="margin-bottom:0;">
-              <label for="city">City *</label>
-              <input type="text" id="city" name="city" placeholder="Oakland" required>
+            <div class="form-row half">
+              <div class="form-row" style="margin-bottom:0;">
+                <label for="tutor-first-name">First name *</label>
+                <input type="text" id="tutor-first-name" name="tutor-first-name" placeholder="Alex">
+              </div>
+              <div class="form-row" style="margin-bottom:0;">
+                <label for="tutor-last-name">Last name *</label>
+                <input type="text" id="tutor-last-name" name="tutor-last-name" placeholder="Johnson">
+              </div>
             </div>
-            <div class="form-row" style="margin-bottom:0;">
-              <label for="state">State *</label>
-              <input type="text" id="state" name="state" placeholder="CA" required>
-            </div>
-          </div>
 
-          <div class="form-divider">— Parent / student info —</div>
-
-          <div class="form-row half">
-            <div class="form-row" style="margin-bottom:0;">
-              <label for="child-name">Child's first name</label>
-              <input type="text" id="child-name" name="child-name" placeholder="Emma">
+            <div class="form-row">
+              <label for="tutor-phone">Phone number *</label>
+              <input type="tel" id="tutor-phone" name="phone" placeholder="(555) 123-4567">
             </div>
-            <div class="form-row" style="margin-bottom:0;">
-              <label for="grade">Grade level</label>
-              <select id="grade" name="grade">
+
+            <div class="form-row">
+              <label for="tutor-email">Email address *</label>
+              <input type="email" id="tutor-email" name="email" placeholder="you@email.com">
+            </div>
+
+            <div class="form-row half">
+              <div class="form-row" style="margin-bottom:0;">
+                <label for="school">School *</label>
+                <input type="text" id="school" name="school" placeholder="Oakland High School">
+              </div>
+              <div class="form-row" style="margin-bottom:0;">
+                <label for="age">Age *</label>
+                <input type="number" id="age" name="age" placeholder="16" min="14" max="19">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <label for="tutor-grade">What grade are you in? *</label>
+              <select id="tutor-grade" name="tutor-grade">
                 <option value="">Select grade</option>
-                <option>K</option><option>1st</option><option>2nd</option><option>3rd</option>
-                <option>4th</option><option>5th</option><option>6th</option><option>7th</option><option>8th</option>
+                <option>9th</option><option>10th</option><option>11th</option><option>12th</option>
               </select>
             </div>
-          </div>
 
-          <div class="form-row">
-            <label for="subjects">Subjects needed (parents) or subjects you teach (tutors)</label>
-            <input type="text" id="subjects" name="subjects" placeholder="Math, Reading, Science...">
-          </div>
-
-          <div class="form-row">
-            <label for="interests">Interests &amp; hobbies</label>
-            <input type="text" id="interests" name="interests" placeholder="Soccer, art, Minecraft, baking...">
-          </div>
-
-          <div class="form-row half">
-            <div class="form-row" style="margin-bottom:0;">
-              <label for="school">School name (tutors only)</label>
-              <input type="text" id="school" name="school" placeholder="Oakland High School">
+            <div class="form-row">
+              <label for="subjects-teach">What subject(s) can you teach? *</label>
+              <input type="text" id="subjects-teach" name="subjects-teach" placeholder="Math, English, Science...">
             </div>
-            <div class="form-row" style="margin-bottom:0;">
-              <label for="age">Age (tutors only)</label>
-              <input type="number" id="age" name="age" placeholder="16" min="14" max="19">
+
+            <div class="form-row">
+              <label>What grade levels can you teach? * <span style="font-weight:600;color:var(--text-light);">(select all that apply)</span></label>
+              <div class="checkbox-grid" data-grade-group="tutor">
+                <label><input type="checkbox" name="grades-can-teach" value="K"> K</label>
+                <label><input type="checkbox" name="grades-can-teach" value="1st"> 1st</label>
+                <label><input type="checkbox" name="grades-can-teach" value="2nd"> 2nd</label>
+                <label><input type="checkbox" name="grades-can-teach" value="3rd"> 3rd</label>
+                <label><input type="checkbox" name="grades-can-teach" value="4th"> 4th</label>
+                <label><input type="checkbox" name="grades-can-teach" value="5th"> 5th</label>
+                <label><input type="checkbox" name="grades-can-teach" value="6th"> 6th</label>
+                <label><input type="checkbox" name="grades-can-teach" value="7th"> 7th</label>
+                <label><input type="checkbox" name="grades-can-teach" value="8th"> 8th</label>
+              </div>
+            </div>
+
+            <div class="form-row half">
+              <div class="form-row" style="margin-bottom:0;">
+                <label for="days-per-week">How many days can you teach per week? *</label>
+                <input type="number" id="days-per-week" name="days-per-week" min="1" max="7" placeholder="3">
+              </div>
+              <div class="form-row" style="margin-bottom:0;">
+                <label for="kids-per-week">How many kids can you teach per week? *</label>
+                <input type="number" id="kids-per-week" name="kids-per-week" min="1" max="20" placeholder="2">
+              </div>
             </div>
           </div>
 
-          <div class="form-row">
-            <label for="availability">Best times to reach you</label>
-            <select id="availability" name="availability">
-              <option value="">Select preference</option>
-              <option>Weekday mornings</option>
-              <option>Weekday afternoons</option>
-              <option>Weekday evenings</option>
-              <option>Weekends</option>
-              <option>Anytime</option>
-            </select>
-          </div>
-
-          <div class="form-row">
-            <label for="message">Anything else we should know?</label>
-            <textarea id="message" name="message" rows="3" placeholder="Learning goals, preferred meeting type (online/in-person), etc."></textarea>
-          </div>
-
-          <button type="submit" class="btn btn-primary btn-full">Submit — Start Now</button>
-          <p class="form-note" hidden>Thank you! We received your info and will call you at the phone number you provided when we're free.</p>
+          <button type="submit" class="btn btn-primary btn-full" id="signup-submit">Submit — Start Now</button>
         </form>
       </div>
     </section>
