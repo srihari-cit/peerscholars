@@ -21,9 +21,15 @@ document.querySelectorAll('.nav-toggle').forEach((toggle) => {
 
 // Highlight active nav link
 const current = window.location.pathname.split('/').pop() || 'index.html';
+const hash = window.location.hash;
 document.querySelectorAll('.nav-center a').forEach((link) => {
-  const href = link.getAttribute('href');
-  if (href === current || (current === '' && href === 'index.html')) {
+  const href = link.getAttribute('href') || '';
+  const [hrefPath, hrefHash] = href.split('#');
+  const hrefFile = hrefPath.split('/').pop() || 'index.html';
+
+  if (hash && hrefHash && hash === `#${hrefHash}` && (hrefFile === current || (current === '' && hrefFile === 'index.html'))) {
+    link.classList.add('active');
+  } else if (!hash && hrefFile === current && !href.includes('#')) {
     link.classList.add('active');
   }
 });
