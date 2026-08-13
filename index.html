@@ -230,35 +230,99 @@
     </section>
 
     <!-- Parent dashboard -->
-    <section id="dashboard" class="section section-alt">
-      <div class="container">
+    <section id="dashboard" class="section section-alt dashboard-section">
+      <div class="container container-wide">
         <div class="section-header reveal">
           <p class="eyebrow">Parent Dashboard</p>
           <h2>Track your child's progress</h2>
-          <p class="section-desc">See attendance, schedules, session reports, and progress — all in one place.</p>
+          <p class="section-desc">Every parent gets a real dashboard — attendance, schedules, session reports, and progress in one place.</p>
         </div>
-        <div class="dashboard-layout reveal">
-          <aside class="dashboard-sidebar">
-            <h3>Menu</h3>
-            <ul class="dashboard-nav">
-              <li><a href="#" class="active">Overview</a></li>
-              <li><a href="#">Schedule</a></li>
-              <li><a href="#">Progress Reports</a></li>
-              <li><a href="#">Attendance</a></li>
-            </ul>
-          </aside>
-          <div class="dashboard-main">
-            <div class="dashboard-stats">
-              <div class="stat-card"><div class="num">—</div><div class="lbl">Sessions completed</div></div>
-              <div class="stat-card green"><div class="num">—</div><div class="lbl">Attendance rate</div></div>
-              <div class="stat-card green"><div class="num">$9.99</div><div class="lbl">Per hour</div></div>
-            </div>
-            <div class="card">
-              <h3 style="margin-bottom:0.75rem;">Recent sessions &amp; reports</h3>
-              <p style="color:var(--text-light);font-size:0.9375rem;">Session history and tutor reports appear here after tutoring begins.</p>
+        <div class="dashboard-showcase reveal">
+          <div class="dashboard-showcase-bar">
+            <span class="demo-dot"></span><span class="demo-dot"></span><span class="demo-dot"></span>
+            <span class="dashboard-showcase-title">PeerScholars · Parent Dashboard</span>
+          </div>
+          <div class="dashboard-layout dashboard-layout-lg">
+            <aside class="dashboard-sidebar">
+              <h3>Menu</h3>
+              <ul class="dashboard-nav">
+                <li><a href="#" class="active">Overview</a></li>
+                <li><a href="#">Schedule</a></li>
+                <li><a href="#">Progress Reports</a></li>
+                <li><a href="#">Attendance</a></li>
+                <li><a href="#">Messages</a></li>
+                <li><a href="#">Settings</a></li>
+              </ul>
+              <div class="dashboard-child-card">
+                <p class="dashboard-child-label">Child profile</p>
+                <p class="dashboard-child-name">Your child · Grade —</p>
+                <p class="dashboard-child-meta">Tutor: Not matched yet</p>
+                <p class="dashboard-child-meta">Subject: Pending sign-up</p>
+              </div>
+            </aside>
+            <div class="dashboard-main">
+              <div class="dashboard-stats dashboard-stats-lg">
+                <div class="stat-card"><div class="num">—</div><div class="lbl">Sessions completed</div></div>
+                <div class="stat-card green"><div class="num">—</div><div class="lbl">Attendance rate</div></div>
+                <div class="stat-card green"><div class="num">—</div><div class="lbl">Next session</div></div>
+                <div class="stat-card"><div class="num">$9.99</div><div class="lbl">Rate per hour</div></div>
+              </div>
+              <div class="dashboard-panels">
+                <div class="card dashboard-panel">
+                  <h3>Subject progress</h3>
+                  <p class="dashboard-panel-note">Updates automatically after each tutoring session.</p>
+                  <div class="dashboard-progress-rows">
+                    <div class="dashboard-progress-row">
+                      <div class="dashboard-progress-head"><span>Math</span><span>—</span></div>
+                      <div class="progress-bar-wrap"><div class="progress-bar" style="width:0"></div></div>
+                    </div>
+                    <div class="dashboard-progress-row">
+                      <div class="dashboard-progress-head"><span>Reading</span><span>—</span></div>
+                      <div class="progress-bar-wrap"><div class="progress-bar" style="width:0"></div></div>
+                    </div>
+                    <div class="dashboard-progress-row">
+                      <div class="dashboard-progress-head"><span>Science</span><span>—</span></div>
+                      <div class="progress-bar-wrap"><div class="progress-bar" style="width:0"></div></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="card dashboard-panel">
+                  <h3>Recent sessions &amp; reports</h3>
+                  <ul class="session-list">
+                    <li>
+                      <div>
+                        <strong>No sessions yet</strong>
+                        <p style="color:var(--text-light);font-size:0.8125rem;margin-top:0.25rem;">Your session history and tutor notes will show up here.</p>
+                      </div>
+                      <span class="badge badge-blue">Upcoming</span>
+                    </li>
+                    <li>
+                      <div>
+                        <strong>Progress report</strong>
+                        <p style="color:var(--text-light);font-size:0.8125rem;margin-top:0.25rem;">After each session, you'll see what your child worked on.</p>
+                      </div>
+                      <span class="badge badge-green">Included</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div class="card dashboard-panel dashboard-panel-wide">
+                <h3>Attendance this month</h3>
+                <p class="dashboard-panel-note">Weekly attendance tracking starts after your first session is booked.</p>
+                <div class="dashboard-attendance-grid">
+                  <div class="dashboard-attendance-cell">Mon</div>
+                  <div class="dashboard-attendance-cell">Tue</div>
+                  <div class="dashboard-attendance-cell">Wed</div>
+                  <div class="dashboard-attendance-cell">Thu</div>
+                  <div class="dashboard-attendance-cell">Fri</div>
+                  <div class="dashboard-attendance-cell">Sat</div>
+                  <div class="dashboard-attendance-cell">Sun</div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
+        <p class="dashboard-caption reveal">Included free with every family sign-up — no extra cost.</p>
       </div>
     </section>
 
