@@ -117,11 +117,18 @@ function resetTutorVerification() {
 }
 
 async function sendVerificationEmail(schoolEmail, code, studentName) {
-  const message = `Your PeerScholars tutor verification code is: ${code}
+  const greeting = studentName ? `Hi ${studentName},` : 'Hi,';
+  const message = `${greeting}
+
+Your PeerScholars tutor verification code is:
+
+${code}
 
 Enter this code on the sign-up page within 15 minutes.
 
-If you did not request this, you can ignore this email.`;
+If you did not request this, you can ignore this email.
+
+— PeerScholars`;
 
   if (EMAILJS_PUBLIC_KEY && EMAILJS_SERVICE_ID && EMAILJS_TEMPLATE_ID && window.emailjs) {
     emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
@@ -134,42 +141,32 @@ If you did not request this, you can ignore this email.`;
     return;
   }
 
-  const response = await fetch(
-    `https://formsubmit.co/ajax/${encodeURIComponent(schoolEmail)}`,
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
-      body: JSON.stringify({
-        _subject: 'Your PeerScholars verification code',
-        _captcha: 'false',
-        message,
-      }),
-    }
-  );
-
-  const result = await response.json();
-  if (!response.ok || !result.success) {
-    throw new Error(result.message || 'Could not send verification email');
-  }
-
-  await fetch(`https://formsubmit.co/ajax/${SIGNUP_EMAIL}`, {
+  // Send through our verified support inbox and CC the student's BSD Outlook email.
+  // Posting directly to the student address fails because FormSubmit requires each
+  // new "owner" email to be activated first.
+  const response = await fetch(`https://formsubmit.co/ajax/${SIGNUP_EMAIL}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       Accept: 'application/json',
     },
     body: JSON.stringify({
-      _subject: 'Tutor verification code sent',
+      _subject: 'Your PeerScholars verification code',
       _captcha: 'false',
-      _template: 'table',
+      _template: 'box',
+      _cc: schoolEmail,
+      email: schoolEmail,
+      student_name: studentName || 'Tutor applicant',
       school_email: schoolEmail,
       verification_code: code,
-      student_name: studentName || '',
+      message,
     }),
   });
+
+  const result = await response.json();
+  if (!response.ok || !result.success) {
+    throw new Error(result.message || 'Could not send verification email');
+  }
 }
 
 async function handleSendCode() {
@@ -201,7 +198,7 @@ async function handleSendCode() {
   } catch {
     sessionStorage.removeItem(VERIFY_STORAGE_KEY);
     verifyError.textContent =
-      'We could not send the code. Check your email address and try again, or email support@peerscholars.com.';
+      'We could not send the code. Double-check your @bsd405.org address and try again, or email support@peerscholars.com.';
     verifyError.hidden = false;
     sendCodeBtn.textContent = 'Send 5-digit verification code';
   } finally {
