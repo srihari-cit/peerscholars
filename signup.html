@@ -45,7 +45,7 @@
     </section>
 
     <section class="section" style="padding-top:1rem;">
-      <div class="container form-page">
+      <div class="container form-page form-page-wide">
         <div class="form-card" id="role-picker-card">
           <p class="form-divider" style="margin-top:0;">Who are you signing up as?</p>
           <div class="signup-role-picker">
@@ -132,77 +132,100 @@
 
           <!-- Tutor form -->
           <div id="tutor-fields" hidden>
-            <p class="form-divider" style="margin-top:0;">Tutor info</p>
+            <div class="signup-tutor-layout">
+              <div class="signup-tutor-main">
+                <p class="form-divider" style="margin-top:0;">Tutor info</p>
 
-            <div class="form-row half">
-              <div class="form-row" style="margin-bottom:0;">
-                <label for="tutor-first-name">First name *</label>
-                <input type="text" id="tutor-first-name" name="tutor-first-name" placeholder="Alex">
+                <div class="form-row half">
+                  <div class="form-row" style="margin-bottom:0;">
+                    <label for="tutor-first-name">First name *</label>
+                    <input type="text" id="tutor-first-name" name="tutor-first-name" placeholder="Alex">
+                  </div>
+                  <div class="form-row" style="margin-bottom:0;">
+                    <label for="tutor-last-name">Last name *</label>
+                    <input type="text" id="tutor-last-name" name="tutor-last-name" placeholder="Johnson">
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <label for="school-email">Bellevue School District student email *</label>
+                  <input type="email" id="school-email" name="school-email" placeholder="firstname.lastname@bsd405.org" autocomplete="email">
+                  <p class="field-hint">Use your official BSD student email (ends in @bsd405.org).</p>
+                </div>
+
+                <div class="form-row">
+                  <button type="button" class="btn btn-secondary btn-full" id="send-code-btn">Send 5-digit verification code</button>
+                  <p class="field-hint" id="code-sent-note" hidden>Code sent! Check your school email inbox (and spam folder).</p>
+                </div>
+
+                <div class="form-row">
+                  <label for="tutor-phone">Phone number *</label>
+                  <input type="tel" id="tutor-phone" name="phone" placeholder="(555) 123-4567">
+                </div>
+
+                <div class="form-row half">
+                  <div class="form-row" style="margin-bottom:0;">
+                    <label for="school">School *</label>
+                    <input type="text" id="school" name="school" placeholder="Bellevue High School">
+                  </div>
+                  <div class="form-row" style="margin-bottom:0;">
+                    <label for="age">Age *</label>
+                    <input type="number" id="age" name="age" placeholder="16" min="14" max="19">
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <label for="tutor-grade">What grade are you in? *</label>
+                  <select id="tutor-grade" name="tutor-grade">
+                    <option value="">Select grade</option>
+                    <option>9th</option><option>10th</option><option>11th</option><option>12th</option>
+                  </select>
+                </div>
+
+                <div class="form-row">
+                  <label for="subjects-teach">What subject(s) can you teach? *</label>
+                  <input type="text" id="subjects-teach" name="subjects-teach" placeholder="Math, English, Science...">
+                </div>
+
+                <div class="form-row">
+                  <label>What grade levels can you teach? * <span style="font-weight:600;color:var(--text-light);">(select all that apply)</span></label>
+                  <div class="checkbox-grid" data-grade-group="tutor">
+                    <label><input type="checkbox" name="grades-can-teach" value="K"> K</label>
+                    <label><input type="checkbox" name="grades-can-teach" value="1st"> 1st</label>
+                    <label><input type="checkbox" name="grades-can-teach" value="2nd"> 2nd</label>
+                    <label><input type="checkbox" name="grades-can-teach" value="3rd"> 3rd</label>
+                    <label><input type="checkbox" name="grades-can-teach" value="4th"> 4th</label>
+                    <label><input type="checkbox" name="grades-can-teach" value="5th"> 5th</label>
+                    <label><input type="checkbox" name="grades-can-teach" value="6th"> 6th</label>
+                    <label><input type="checkbox" name="grades-can-teach" value="7th"> 7th</label>
+                    <label><input type="checkbox" name="grades-can-teach" value="8th"> 8th</label>
+                  </div>
+                </div>
+
+                <div class="form-row half">
+                  <div class="form-row" style="margin-bottom:0;">
+                    <label for="days-per-week">How many days can you teach per week? *</label>
+                    <input type="number" id="days-per-week" name="days-per-week" min="1" max="7" placeholder="3">
+                  </div>
+                  <div class="form-row" style="margin-bottom:0;">
+                    <label for="kids-per-week">How many kids can you teach per week? *</label>
+                    <input type="number" id="kids-per-week" name="kids-per-week" min="1" max="20" placeholder="2">
+                  </div>
+                </div>
               </div>
-              <div class="form-row" style="margin-bottom:0;">
-                <label for="tutor-last-name">Last name *</label>
-                <input type="text" id="tutor-last-name" name="tutor-last-name" placeholder="Johnson">
-              </div>
-            </div>
 
-            <div class="form-row">
-              <label for="tutor-phone">Phone number *</label>
-              <input type="tel" id="tutor-phone" name="phone" placeholder="(555) 123-4567">
-            </div>
-
-            <div class="form-row">
-              <label for="tutor-email">Email address *</label>
-              <input type="email" id="tutor-email" name="email" placeholder="you@email.com">
-            </div>
-
-            <div class="form-row half">
-              <div class="form-row" style="margin-bottom:0;">
-                <label for="school">School *</label>
-                <input type="text" id="school" name="school" placeholder="Oakland High School">
-              </div>
-              <div class="form-row" style="margin-bottom:0;">
-                <label for="age">Age *</label>
-                <input type="number" id="age" name="age" placeholder="16" min="14" max="19">
-              </div>
-            </div>
-
-            <div class="form-row">
-              <label for="tutor-grade">What grade are you in? *</label>
-              <select id="tutor-grade" name="tutor-grade">
-                <option value="">Select grade</option>
-                <option>9th</option><option>10th</option><option>11th</option><option>12th</option>
-              </select>
-            </div>
-
-            <div class="form-row">
-              <label for="subjects-teach">What subject(s) can you teach? *</label>
-              <input type="text" id="subjects-teach" name="subjects-teach" placeholder="Math, English, Science...">
-            </div>
-
-            <div class="form-row">
-              <label>What grade levels can you teach? * <span style="font-weight:600;color:var(--text-light);">(select all that apply)</span></label>
-              <div class="checkbox-grid" data-grade-group="tutor">
-                <label><input type="checkbox" name="grades-can-teach" value="K"> K</label>
-                <label><input type="checkbox" name="grades-can-teach" value="1st"> 1st</label>
-                <label><input type="checkbox" name="grades-can-teach" value="2nd"> 2nd</label>
-                <label><input type="checkbox" name="grades-can-teach" value="3rd"> 3rd</label>
-                <label><input type="checkbox" name="grades-can-teach" value="4th"> 4th</label>
-                <label><input type="checkbox" name="grades-can-teach" value="5th"> 5th</label>
-                <label><input type="checkbox" name="grades-can-teach" value="6th"> 6th</label>
-                <label><input type="checkbox" name="grades-can-teach" value="7th"> 7th</label>
-                <label><input type="checkbox" name="grades-can-teach" value="8th"> 8th</label>
-              </div>
-            </div>
-
-            <div class="form-row half">
-              <div class="form-row" style="margin-bottom:0;">
-                <label for="days-per-week">How many days can you teach per week? *</label>
-                <input type="number" id="days-per-week" name="days-per-week" min="1" max="7" placeholder="3">
-              </div>
-              <div class="form-row" style="margin-bottom:0;">
-                <label for="kids-per-week">How many kids can you teach per week? *</label>
-                <input type="number" id="kids-per-week" name="kids-per-week" min="1" max="20" placeholder="2">
-              </div>
+              <aside class="tutor-verify-panel" aria-live="polite">
+                <h3>Confirmation code</h3>
+                <p class="tutor-verify-desc">After you click “Send verification code,” enter the 5-digit number from your school email here.</p>
+                <div class="form-row" style="margin-bottom:0.75rem;">
+                  <label for="confirmation-code">Your code</label>
+                  <input type="text" id="confirmation-code" inputmode="numeric" maxlength="5" pattern="[0-9]{5}" placeholder="12345" autocomplete="one-time-code">
+                </div>
+                <button type="button" class="btn btn-primary btn-full" id="verify-code-btn">Verify code</button>
+                <p class="verify-success" id="verify-success" hidden>Welcome! Your school email is verified.</p>
+                <p class="verify-error" id="verify-error" hidden>Sorry, that code is wrong. Please try again.</p>
+                <p class="field-hint">Codes expire after 15 minutes. You must verify before submitting.</p>
+              </aside>
             </div>
           </div>
 
@@ -221,6 +244,7 @@
     </div>
     <div class="container footer-bottom"><p>&copy; 2026 PeerScholars.</p></div>
   </footer>
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <script src="js/main.js"></script>
   <script src="js/signup.js"></script>
 </body>

@@ -582,6 +582,61 @@ h3 { font-size: 1.0625rem; font-weight: 600; }
 
 /* Forms */
 .form-page { max-width: 520px; margin-inline: auto; }
+.form-page-wide { max-width: 920px; }
+.field-hint {
+  font-size: 0.8125rem;
+  color: var(--text-light);
+  margin-top: 0.375rem;
+  line-height: 1.45;
+}
+.signup-tutor-layout {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 1.5rem;
+  align-items: start;
+}
+.tutor-verify-panel {
+  position: sticky;
+  top: 6rem;
+  background: var(--blue-50);
+  border: 1px solid var(--blue-100);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+}
+.tutor-verify-panel h3 {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+.tutor-verify-desc {
+  font-size: 0.875rem;
+  color: var(--text-light);
+  line-height: 1.5;
+  margin-bottom: 1rem;
+}
+.tutor-verify-panel.is-verified {
+  background: var(--green-50);
+  border-color: var(--green-100);
+}
+.verify-success {
+  margin-top: 0.875rem;
+  padding: 0.75rem;
+  background: var(--green-100);
+  border-radius: var(--radius-sm);
+  color: var(--green-700);
+  font-weight: 700;
+  font-size: 0.875rem;
+  text-align: center;
+}
+.verify-error {
+  margin-top: 0.875rem;
+  padding: 0.75rem;
+  background: #fdecea;
+  border-radius: var(--radius-sm);
+  color: #c0392b;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-align: center;
+}
 .form-card {
   background: var(--white);
   border-radius: var(--radius);
@@ -1018,6 +1073,8 @@ h3 { font-size: 1.0625rem; font-weight: 600; }
   .split-photo-grid.reverse > div { order: unset; }
   .form-row.half { grid-template-columns: 1fr; }
   .signup-role-picker { grid-template-columns: 1fr; }
+  .signup-tutor-layout { grid-template-columns: 1fr; }
+  .tutor-verify-panel { position: static; }
   .footer-grid { grid-template-columns: 1fr 1fr; }
 }
 @media (max-width: 768px) {
