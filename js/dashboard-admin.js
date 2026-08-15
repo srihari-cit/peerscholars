@@ -179,27 +179,37 @@ function bindVerification(state) {
 }
 
 function renderMatching(state) {
-  const pending = state.tutoringRequests.filter((r) => r.status === 'pending');
+  const ready = state.tutoringRequests.filter(
+    (r) => r.paymentStatus === 'paid' && r.matchStatus !== 'Session Scheduled'
+  );
   return `
-    <div class="dash-panel"><h2>Student requests</h2>
-      ${pending.length ? pending.map((r) => {
+    <div class="dash-panel"><h2>Matching queue (paid requests)</h2>
+      ${ready.length ? ready.map((r) => {
         const student = state.students.find((s) => s.id === r.studentId);
         const parent = state.users.find((u) => u.id === r.parentUserId);
-        const suggestions = PSMatching.findMatches(r, PSStore.getVerifiedTutors(), 3);
+        const suggestions = PSMatching.findMatches(r, PSStore.getVerifiedTutors(), student, 5);
         return `<div style="margin-bottom:1.25rem;padding-bottom:1rem;border-bottom:1px solid var(--gray-100);">
           <strong>${PSUtils.esc(student?.firstName || 'Student')}</strong> · Grade ${PSUtils.esc(r.grade)} · ${PSUtils.esc(r.subjects)}
-          <p class="field-hint">Parent: ${PSUtils.esc(parent?.firstName || '')} · ${PSUtils.esc(r.mode)} · ${PSUtils.esc(r.city || '')}</p>
-          <p>Suggested tutors:</p>
-          <ul>${suggestions.map(({ tutor, score }) => `<li>${PSUtils.esc(tutor.firstName)} ${PSUtils.esc(tutor.lastName)} (score ${score}) <button class="btn btn-small btn-primary" data-create-match data-request="${r.id}" data-tutor="${tutor.id}" data-student="${r.studentId}" data-parent="${r.parentUserId}">Create match</button></li>`).join('') || '<li>No verified tutors match yet.</li>'}</ul>
+          <p class="field-hint">Status: ${PSUtils.esc(r.matchStatus)} · Parent: ${PSUtils.esc(parent?.firstName || '')} · Online</p>
+          <p class="field-hint">Interests: ${PSUtils.esc(student?.interests || r.interests || '—')}</p>
+          <table class="data-table"><thead><tr><th>Tutor</th><th>Match</th><th>Shared interests</th><th>Capacity</th><th></th></tr></thead>
+          <tbody>${suggestions.map(({ tutor, matchPercent, sharedInterestLabels, explanation }) => `<tr>
+            <td>${PSUtils.esc(tutor.firstName)} ${PSUtils.esc(tutor.lastName)}</td>
+            <td>${matchPercent}%</td>
+            <td>${PSUtils.esc(sharedInterestLabels.join(', ') || '—')}</td>
+            <td>${tutor.activeStudentCount ?? 0}/${tutor.weeklyCapacity >= 6 ? '6+' : tutor.weeklyCapacity ?? 4}</td>
+            <td><button class="btn btn-small btn-primary" data-create-match data-request="${r.id}" data-tutor="${tutor.id}" data-student="${r.studentId}" data-parent="${r.parentUserId}" data-score="${matchPercent}">Manual match</button></td>
+          </tr>`).join('') || '<tr><td colspan="5">No qualified tutors</td></tr>'}
+          </tbody></table>
         </div>`;
-      }).join('') : '<p class="field-hint">No pending requests.</p>'}
+      }).join('') : '<p class="field-hint">No paid requests waiting for matching.</p>'}
     </div>
-    <div class="dash-panel"><h2>Current matches</h2>
-      <table class="data-table"><thead><tr><th>Student</th><th>Tutor</th><th>Status</th></tr></thead>
+    <div class="dash-panel"><h2>All matches</h2>
+      <table class="data-table"><thead><tr><th>Student</th><th>Tutor</th><th>Status</th><th>Score</th></tr></thead>
       <tbody>${state.matches.map((m) => {
         const student = state.students.find((s) => s.id === m.studentId);
         const tutor = state.tutorProfiles.find((t) => t.id === m.tutorProfileId);
-        return `<tr><td>${PSUtils.esc(student?.firstName || '—')}</td><td>${PSUtils.esc(tutor?.firstName || '—')}</td><td>${PSUtils.badge(m.status, m.status === 'approved' ? 'green' : 'blue')}</td></tr>`;
+        return `<tr><td>${PSUtils.esc(student?.firstName || '—')}</td><td>${PSUtils.esc(tutor?.firstName || '—')}</td><td>${PSUtils.badge(m.matchStatus || m.status, 'blue')}</td><td>${m.matchPercent ? m.matchPercent + '%' : '—'}</td></tr>`;
       }).join('')}</tbody></table>
     </div>`;
 }
@@ -207,7 +217,10 @@ function renderMatching(state) {
 function bindMatching(state) {
   document.querySelectorAll('[data-create-match]').forEach((btn) => {
     btn.addEventListener('click', () => {
-      PSStore.createMatch(btn.dataset.request, btn.dataset.tutor, btn.dataset.student, btn.dataset.parent);
+      const match = PSStore.parentSelectTutor(btn.dataset.request, btn.dataset.tutor, {
+        matchPercent: Number(btn.dataset.score),
+      });
+      if (match?.id) PSStore.tutorAcceptMatch(match.id);
       location.reload();
     });
   });
@@ -219,7 +232,7 @@ function renderSessions(state) {
       <h2>Schedule a session</h2>
       <form id="schedule-form" class="inline-form">
         <div class="form-row"><label>Approved match</label>
-          <select name="matchId" required>${state.matches.filter((m) => m.status === 'approved').map((m) => {
+          <select name="matchId" required>${state.matches.filter((m) => m.matchStatus === 'Match Confirmed' || m.matchStatus === 'Session Scheduled' || m.status === 'Match Confirmed').map((m) => {
             const student = state.students.find((s) => s.id === m.studentId);
             const tutor = state.tutorProfiles.find((t) => t.id === m.tutorProfileId);
             return `<option value="${m.id}">${PSUtils.esc(student?.firstName)} + ${PSUtils.esc(tutor?.firstName)}</option>`;
@@ -229,11 +242,7 @@ function renderSessions(state) {
         <div class="form-row half"><div class="form-row" style="margin:0"><label>Date</label><input type="date" name="date" required></div>
         <div class="form-row" style="margin:0"><label>Start time</label><input type="time" name="startTime" required></div></div>
         <div class="form-row"><label>Duration (minutes)</label><input type="number" name="durationMinutes" value="60" min="30" max="180"></div>
-        <div class="form-row"><label>Mode</label><select name="mode"><option>Online</option><option>In-person</option></select></div>
-        <div class="form-row"><label>Google Meet link (online)</label><input name="meetingLink" placeholder="https://meet.google.com/..."></div>
-        <div class="form-row"><label>Approved public location (in-person)</label>
-          <select name="location">${PS_CONFIG.APPROVED_IN_PERSON_LOCATIONS.map((l) => `<option>${PSUtils.esc(l)}</option>`).join('')}</select>
-        </div>
+        <div class="form-row"><label>Google Meet link</label><input name="meetingLink" placeholder="https://meet.google.com/..." required></div>
         <button type="submit" class="btn btn-primary">Schedule session</button>
       </form>
     </div>
@@ -266,9 +275,9 @@ function bindSessions(state) {
       date: fd.get('date'),
       startTime: fd.get('startTime'),
       durationMinutes: Number(fd.get('durationMinutes')) || 60,
-      mode: fd.get('mode'),
-      meetingLink: fd.get('mode') === 'Online' ? fd.get('meetingLink') : '',
-      location: fd.get('mode') === 'In-person' ? fd.get('location') : '',
+      mode: 'Online',
+      meetingLink: fd.get('meetingLink'),
+      location: '',
       status: 'Scheduled',
     });
     location.reload();

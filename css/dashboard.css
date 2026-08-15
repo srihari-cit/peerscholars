@@ -226,3 +226,75 @@
   .dash-layout { grid-template-columns: 1fr; }
   .dash-sidebar { position: static; }
 }
+
+/* Match cards */
+.match-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+.match-card {
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  padding: 1rem;
+  background: var(--white);
+}
+.match-card-head { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; margin-bottom: 0.35rem; }
+.match-card h3 { margin: 0; font-size: 1.05rem; }
+.match-grade { font-size: 0.82rem; color: var(--text-light); font-weight: 600; }
+.match-score { font-weight: 700; color: var(--primary); margin: 0.5rem 0 0.25rem; }
+.match-shared, .match-avail, .match-format, .match-school, .match-subjects, .match-why {
+  font-size: 0.82rem;
+  color: var(--text-light);
+  line-height: 1.5;
+  margin: 0.2rem 0;
+}
+
+/* Interest tags (signup) */
+.interest-tag-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.interest-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.65rem;
+  border: 1px solid var(--gray-200);
+  border-radius: 999px;
+  font-size: 0.82rem;
+  cursor: pointer;
+  background: var(--white);
+}
+.interest-tag:has(input:checked) {
+  border-color: var(--primary);
+  background: #eef4ff;
+}
+.interest-other-input { margin-top: 0.5rem; width: 100%; }
+
+/* Availability day/time picker */
+.availability-schedule { display: grid; gap: 0.65rem; }
+.availability-day-row {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 0.75rem;
+  align-items: center;
+}
+.availability-day-label { font-size: 0.875rem; font-weight: 500; }
+.availability-times {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.availability-times input[type="time"] {
+  padding: 0.35rem 0.5rem;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius);
+  font-size: 0.875rem;
+}
+.availability-sep { font-size: 0.82rem; color: var(--text-light); }
+@media (max-width: 600px) {
+  .availability-day-row { grid-template-columns: 1fr; }
+}

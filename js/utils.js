@@ -129,11 +129,10 @@ By accepting, you agree to:
 5. Never ask a student to keep communication secret from their parent/guardian.
 6. Do not communicate with younger students through private personal social-media accounts.
 7. Do not exchange personal phone numbers unless explicitly authorized through PeerScholars.
-8. Do not meet students at private residences.
-9. In-person tutoring must happen only at approved public locations.
-10. Report safety concerns immediately to PeerScholars.
-11. Do not engage in inappropriate conversations or behavior.
-12. Do not record tutoring sessions without required permission.
-13. Maintain professional boundaries.
-14. Do not share student information with others.`,
+8. All tutoring sessions are online via Google Meet.
+9. Report safety concerns immediately to PeerScholars.
+10. Do not engage in inappropriate conversations or behavior.
+11. Do not record tutoring sessions without required permission.
+12. Maintain professional boundaries.
+13. Do not share student information with others.`,
 };

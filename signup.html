@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/dashboard.css">
 </head>
 <body>
   <div class="top-bar">Affordable tutoring for K–8 students · Verified high school tutors · $12.99/hour</div>
@@ -91,25 +92,19 @@
             <div class="form-row"><label for="child-school">School name (optional)</label><input id="child-school" name="child-school"></div>
             <div class="form-row"><label for="subjects-needed">Subjects needing help *</label><input id="subjects-needed" name="subjects-needed" placeholder="Math, Reading..." required></div>
             <div class="form-row"><label for="topics-needed">Specific topics</label><input id="topics-needed" name="topics-needed" placeholder="Fractions, reading comprehension..."></div>
-            <div class="form-row"><label for="interests">Interests &amp; hobbies *</label><input id="interests" name="interests" required placeholder="Soccer, art, Minecraft..."></div>
+            <div class="form-row">
+              <label>Interests &amp; hobbies * <span class="field-hint" style="font-weight:600;">(select all that apply)</span></label>
+              <div id="family-interests-grid"></div>
+            </div>
             <div class="form-row"><label for="learning-prefs">Learning preferences</label><input id="learning-prefs" name="learning-prefs" placeholder="Visual learner, needs breaks..."></div>
             <div class="form-row"><label for="tutoring-notes">Notes for tutors</label><textarea id="tutoring-notes" name="tutoring-notes" rows="2"></textarea></div>
-            <div class="form-row"><label for="session-mode">Online or in-person *</label>
-              <select id="session-mode" name="session-mode" required><option value="">Select</option><option>Online</option><option>In-person</option><option>Both</option></select>
+            <input type="hidden" name="session-mode" value="Online">
+            <div class="alert alert-info" style="margin:0.75rem 0;">All PeerScholars tutoring sessions are <strong>online via Google Meet</strong> — $12.99/hour.</div>
+            <div class="form-row">
+              <label>When is your child available? * <span class="field-hint" style="font-weight:600;">(pick days, then times)</span></label>
+              <div id="family-availability"></div>
             </div>
-            <div class="form-row"><label>Availability *</label>
-              <div class="checkbox-grid">
-                <label><input type="checkbox" name="availability-days" value="Mon"> Mon</label>
-                <label><input type="checkbox" name="availability-days" value="Tue"> Tue</label>
-                <label><input type="checkbox" name="availability-days" value="Wed"> Wed</label>
-                <label><input type="checkbox" name="availability-days" value="Thu"> Thu</label>
-                <label><input type="checkbox" name="availability-days" value="Fri"> Fri</label>
-                <label><input type="checkbox" name="availability-days" value="Sat"> Sat</label>
-                <label><input type="checkbox" name="availability-days" value="Sun"> Sun</label>
-              </div>
-            </div>
-            <div class="form-row"><label for="availability-notes">Availability details</label><input id="availability-notes" name="availability-notes" placeholder="After 4pm weekdays..."></div>
-            <label style="display:flex;gap:0.5rem;font-size:0.875rem;margin:1rem 0;"><input type="checkbox" id="parent-consent" required> I consent to PeerScholars collecting this information for matching, scheduling, and safety. I understand tutoring is $12.99/hour.</label>
+            <label style="display:flex;gap:0.5rem;font-size:0.875rem;margin:1rem 0;"><input type="checkbox" id="parent-consent" required> I consent to PeerScholars collecting this information for matching, scheduling, and safety. I understand tutoring is $12.99/hour and sessions are held online via Google Meet.</label>
           </div>
 
           <!-- Tutor -->
@@ -161,23 +156,28 @@
                 <label><input type="checkbox" name="grades-can-teach" value="8th"> 8th</label>
               </div>
             </div>
-            <div class="form-row"><label for="tutor-session-mode">Online or in-person *</label>
-              <select id="tutor-session-mode" name="session-mode" required><option value="">Select</option><option>Online</option><option>In-person</option><option>Both</option></select>
+            <input type="hidden" name="session-mode" value="Online">
+            <div class="form-row"><label for="weekly-capacity">How many students can you tutor per week? *</label>
+              <select id="weekly-capacity" name="weekly-capacity" required>
+                <option value="">Select</option>
+                <option value="1">1 student</option>
+                <option value="2">2 students</option>
+                <option value="3">3 students</option>
+                <option value="4">4 students</option>
+                <option value="5">5 students</option>
+                <option value="6">6+ students</option>
+              </select>
             </div>
-            <div class="form-row"><label>Availability *</label>
-              <div class="checkbox-grid">
-                <label><input type="checkbox" name="tutor-availability-days" value="Mon"> Mon</label>
-                <label><input type="checkbox" name="tutor-availability-days" value="Tue"> Tue</label>
-                <label><input type="checkbox" name="tutor-availability-days" value="Wed"> Wed</label>
-                <label><input type="checkbox" name="tutor-availability-days" value="Thu"> Thu</label>
-                <label><input type="checkbox" name="tutor-availability-days" value="Fri"> Fri</label>
-                <label><input type="checkbox" name="tutor-availability-days" value="Sat"> Sat</label>
-                <label><input type="checkbox" name="tutor-availability-days" value="Sun"> Sun</label>
-              </div>
+            <div class="form-row">
+              <label>When are you available to tutor? *</label>
+              <div id="tutor-availability"></div>
             </div>
-            <div class="form-row"><label for="availability-details">Availability details</label><input id="availability-details" name="availability-details"></div>
+            <div class="alert alert-info" style="margin:0.75rem 0;">PeerScholars tutoring is <strong>online only via Google Meet</strong>.</div>
             <div class="form-row"><label for="bio">Short bio *</label><textarea id="bio" name="bio" rows="2" required></textarea></div>
-            <div class="form-row"><label for="tutor-interests">Interests *</label><input id="tutor-interests" name="interests" required></div>
+            <div class="form-row">
+              <label>My interests *</label>
+              <div id="tutor-interests-grid"></div>
+            </div>
             <div class="form-row"><label for="why-tutor">Why do you want to tutor? *</label><textarea id="why-tutor" name="why-tutor" rows="2" required></textarea></div>
             <div class="form-row"><label for="experience">Previous tutoring/teaching experience</label><textarea id="experience" name="experience" rows="2"></textarea></div>
 
@@ -209,6 +209,8 @@
     <div class="container footer-bottom"><p>&copy; 2026 PeerScholars · <a href="report-concern.html">Report a Concern</a></p></div>
   </footer>
   <script src="js/config.js"></script>
+  <script src="js/interests.js"></script>
+  <script src="js/availability.js"></script>
   <script src="js/store.js"></script>
   <script src="js/matching.js"></script>
   <script src="js/utils.js"></script>

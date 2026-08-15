@@ -66,18 +66,61 @@ function showForm(role) {
   }
 }
 
+function collectInterestTags(checkboxName, otherInputId) {
+  const tags = [...form.querySelectorAll(`input[name="${checkboxName}"]:checked`)]
+    .map((c) => c.value)
+    .filter((v) => v !== 'other');
+  const other = document.getElementById(otherInputId)?.value?.trim();
+  if (other) tags.push(other);
+  return tags;
+}
+
+function interestsToText(tags) {
+  return tags.map((id) => PSInterests.labelFor(id)).join(', ');
+}
+
+function initSignupUI() {
+  const familyInterests = document.getElementById('family-interests-grid');
+  const tutorInterests = document.getElementById('tutor-interests-grid');
+  const familyAvail = document.getElementById('family-availability');
+  const tutorAvail = document.getElementById('tutor-availability');
+
+  if (familyInterests) familyInterests.innerHTML = PSInterests.renderCheckboxGrid('interest-tags', 'family');
+  if (tutorInterests) tutorInterests.innerHTML = PSInterests.renderCheckboxGrid('tutor-interest-tags', 'tutor');
+  if (familyAvail) familyAvail.innerHTML = PSAvailability.renderDayTimePicker('availability-days', 'family-avail', 'family-availability');
+  if (tutorAvail) tutorAvail.innerHTML = PSAvailability.renderDayTimePicker('tutor-availability-days', 'tutor-avail', 'tutor-availability');
+
+  PSAvailability.initDayTimePickers(form);
+
+  form.querySelector('#family-interest-other-cb')?.addEventListener('change', (e) => {
+    const el = document.getElementById('family-interest-other');
+    if (el) el.hidden = !e.target.checked;
+  });
+  form.querySelector('#tutor-interest-other-cb')?.addEventListener('change', (e) => {
+    const el = document.getElementById('tutor-interest-other');
+    if (el) el.hidden = !e.target.checked;
+  });
+}
+
 function validateFamily() {
   if (!form.querySelector('#parent-consent')?.checked) {
     return 'Please confirm parent/guardian consent.';
   }
-  const days = collectCheckboxValues('availability-days');
-  if (!days) return 'Please select at least one availability day.';
+  const tags = collectInterestTags('interest-tags', 'family-interest-other');
+  if (!tags.length) return 'Please select at least one interest.';
+  const slots = PSAvailability.collectFromForm(form, 'availability-days', 'family-avail');
+  if (!slots.length) return 'Please select at least one day and time you are available.';
   return null;
 }
 
 function validateTutor() {
   const grades = collectCheckboxValues('grades-can-teach');
   if (!grades) return 'Please select at least one grade level you can tutor.';
+  if (!form.querySelector('#weekly-capacity')?.value) return 'Please select your weekly student capacity.';
+  const tags = collectInterestTags('tutor-interest-tags', 'tutor-interest-other');
+  if (!tags.length) return 'Please select at least one interest.';
+  const slots = PSAvailability.collectFromForm(form, 'tutor-availability-days', 'tutor-avail');
+  if (!slots.length) return 'Please select at least one day and time you are available to tutor.';
   if (!form.querySelector('#code-of-conduct-read')?.checked) {
     return 'Please confirm you have read the Tutor Code of Conduct.';
   }
@@ -151,16 +194,22 @@ async function submitFamily(fd) {
 
   if (user.error) throw new Error(user.error);
 
+  const interestTags = collectInterestTags('interest-tags', 'family-interest-other');
+  const availabilitySlots = PSAvailability.collectFromForm(form, 'availability-days', 'family-avail');
+  const availabilityText = availabilitySlots.map((s) => PSAvailability.formatSlot({ day: s.day, start: PSAvailability.toMinutes(s.startTime), end: PSAvailability.toMinutes(s.endTime) })).join('; ');
+
   const student = PSStore.createStudent(user.id, {
     firstName: fd.get('child-first-name'),
     grade: fd.get('child-grade'),
     school: fd.get('child-school') || '',
     subjects: fd.get('subjects-needed'),
     topics: fd.get('topics-needed') || '',
-    availability: collectCheckboxValues('availability-days') + (fd.get('availability-notes') ? ` — ${fd.get('availability-notes')}` : ''),
-    mode: fd.get('session-mode'),
+    availability: availabilityText,
+    availabilitySlots,
+    mode: 'Online',
     learningPrefs: fd.get('learning-prefs') || '',
-    interests: fd.get('interests'),
+    interests: interestsToText(interestTags),
+    interestTags,
     notes: fd.get('tutoring-notes') || '',
   });
 
@@ -169,11 +218,12 @@ async function submitFamily(fd) {
     parentUserId: user.id,
     subjects: student.subjects,
     grade: student.grade,
-    mode: student.mode,
+    mode: 'Online',
     city: fd.get('city'),
     interests: student.interests,
-    availability: student.availability,
-    status: 'pending',
+    interestTags,
+    availability: availabilityText,
+    availabilitySlots,
   });
 
   await PSUtils.notifySupport('New PeerScholars Parent Sign Up', Object.fromEntries(fd));
@@ -209,6 +259,10 @@ async function submitTutor(fd) {
   const parentPhone = fd.get('parent-guardian-phone');
   const tutorFirstName = fd.get('tutor-first-name');
 
+  const tutorInterestTags = collectInterestTags('tutor-interest-tags', 'tutor-interest-other');
+  const tutorAvailabilitySlots = PSAvailability.collectFromForm(form, 'tutor-availability-days', 'tutor-avail');
+  const tutorAvailabilityText = tutorAvailabilitySlots.map((s) => PSAvailability.formatSlot({ day: s.day, start: PSAvailability.toMinutes(s.startTime), end: PSAvailability.toMinutes(s.endTime) })).join('; ');
+
   const profile = PSStore.createTutorProfile(user.id, {
     firstName: tutorFirstName,
     lastName: fd.get('tutor-last-name'),
@@ -226,12 +280,14 @@ async function submitTutor(fd) {
     gradesCanTeach: [...form.querySelectorAll('input[name="grades-can-teach"]:checked')].map(
       (c) => c.value
     ),
-    availability:
-      collectCheckboxValues('tutor-availability-days') +
-      (fd.get('availability-details') ? ` — ${fd.get('availability-details')}` : ''),
-    mode: fd.get('session-mode'),
+    weeklyCapacity: Number(fd.get('weekly-capacity')) || 1,
+    activeStudentCount: 0,
+    availability: tutorAvailabilityText,
+    availabilitySlots: tutorAvailabilitySlots,
+    mode: 'Online',
     bio: fd.get('bio'),
-    interests: fd.get('interests'),
+    interests: interestsToText(tutorInterestTags),
+    interestTags: tutorInterestTags,
     whyTutor: fd.get('why-tutor'),
     experience: fd.get('experience'),
     schoolIdUploaded: true,
@@ -289,6 +345,7 @@ rolePicker?.addEventListener('click', (e) => {
 backBtn?.addEventListener('click', showRolePicker);
 
 if (form) {
+  initSignupUI();
   let errorNote = form.querySelector('.form-error');
   if (!errorNote && submitBtn) {
     errorNote = document.createElement('p');

@@ -71,9 +71,13 @@ document.addEventListener('DOMContentLoaded', () => {
     <div class="dash-panel">
       <h2>Your profile</h2>
       <p>${PSUtils.esc(tutor.subjects)} · Grades ${PSUtils.esc((tutor.gradesCanTeach || []).join(', '))}</p>
+      <p class="field-hint">Capacity: ${tutor.activeStudentCount ?? 0} / ${tutor.weeklyCapacity >= 6 ? '6+' : tutor.weeklyCapacity ?? 4} students this week</p>
       <p class="field-hint">${PSUtils.esc(tutor.bio || '')}</p>
-      <p class="field-hint">Availability: ${PSUtils.esc(tutor.availability || '—')}</p>
+      <p class="field-hint">Available: ${PSUtils.esc(tutor.availability || '—')}</p>
+      <p class="field-hint">Format: Online · Google Meet</p>
     </div>
+
+    ${renderTutorMatchRequests(tutor, state)}
 
     <div class="dash-panel">
       <h2>Upcoming sessions</h2>
@@ -111,7 +115,43 @@ document.addEventListener('DOMContentLoaded', () => {
     PSStore.acceptCodeOfConduct(tutor.id);
     location.reload();
   });
+
+  root.addEventListener('click', (e) => {
+    const acceptBtn = e.target.closest('[data-accept-match]');
+    const declineBtn = e.target.closest('[data-decline-match]');
+    if (acceptBtn) {
+      PSStore.tutorAcceptMatch(acceptBtn.dataset.acceptMatch);
+      location.reload();
+    }
+    if (declineBtn) {
+      PSStore.tutorDeclineMatch(declineBtn.dataset.declineMatch);
+      alert('Match declined. The student will see other recommended tutors.');
+      location.reload();
+    }
+  });
 });
+
+function renderTutorMatchRequests(tutor, state) {
+  const pending = PSStore.getPendingMatchesForTutor(tutor.id);
+  if (!pending.length) return '';
+  return `<div class="dash-panel"><h2>New PeerScholars tutoring requests</h2>
+    ${pending.map((m) => {
+      const student = state.students.find((s) => s.id === m.studentId);
+      const req = state.tutoringRequests.find((r) => r.id === m.requestId);
+      const shared = (m.sharedInterests || []).map((id) => PSInterests.labelFor(id)).join(', ') || '—';
+      return `<div class="match-request-card" style="margin-bottom:1rem;padding-bottom:1rem;border-bottom:1px solid var(--gray-100);">
+        <p><strong>Grade ${PSUtils.esc(student?.grade || req?.grade)}</strong> · ${PSUtils.esc(req?.subjects || student?.subjects)}</p>
+        <p class="field-hint">Preferred schedule: ${PSUtils.esc(student?.availability || req?.availability || '—')}</p>
+        <p class="field-hint">Format: Online · Google Meet</p>
+        <p class="field-hint">Shared interests: ${PSUtils.esc(shared)}</p>
+        <div class="btn-row">
+          <button class="btn btn-primary btn-small" data-accept-match="${m.id}">Accept Match</button>
+          <button class="btn btn-secondary btn-small" data-decline-match="${m.id}">Decline</button>
+        </div>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
 
 function renderReportForm(sessions) {
   const completed = sessions.filter(

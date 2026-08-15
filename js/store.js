@@ -107,10 +107,15 @@
           school: 'Somerset Elementary',
           subjects: 'Math',
           topics: 'Fractions, word problems',
-          availability: 'Mon, Wed after 4pm',
+          interestTags: ['soccer', 'science', 'gaming'],
+          availabilitySlots: [
+            { day: 'Tue', startTime: '17:00', endTime: '19:00' },
+            { day: 'Wed', startTime: '17:00', endTime: '19:00' },
+          ],
+          availability: 'Tue, Wed 5:00–7:00 PM',
           mode: 'Online',
           learningPrefs: 'Visual examples, short breaks',
-          interests: 'Soccer, drawing',
+          interests: 'Soccer, Science, Gaming',
           notes: 'Needs encouragement with word problems.',
           createdAt: now(),
         },
@@ -133,10 +138,17 @@
           parentPhone: '(425) 555-0199',
           subjects: 'Math, Science',
           gradesCanTeach: ['3rd', '4th', '5th', '6th'],
-          availability: 'Mon–Thu after 3:30pm',
-          mode: 'Both',
+          weeklyCapacity: 4,
+          activeStudentCount: 1,
+          interestTags: ['soccer', 'coding', 'science'],
+          availabilitySlots: [
+            { day: 'Tue', startTime: '17:00', endTime: '19:00' },
+            { day: 'Sat', startTime: '10:00', endTime: '13:00' },
+          ],
+          availability: 'Tue 5:00–7:00 PM, Sat 10:00 AM–1:00 PM',
+          mode: 'Online',
           bio: 'Honor roll student who loves helping younger kids with math.',
-          interests: 'Basketball, coding',
+          interests: 'Soccer, Coding, Science',
           whyTutor: 'I enjoy explaining concepts in simple ways.',
           experience: 'Helped classmates and younger siblings with homework.',
           parentConsent: true,
@@ -171,8 +183,16 @@
           grade: '5th',
           mode: 'Online',
           city: 'Bellevue',
-          interests: 'Soccer, drawing',
-          availability: 'Mon, Wed after 4pm',
+          interests: 'Soccer, Science, Gaming',
+          interestTags: ['soccer', 'science', 'gaming'],
+          availabilitySlots: [
+            { day: 'Tue', startTime: '17:00', endTime: '19:00' },
+            { day: 'Wed', startTime: '17:00', endTime: '19:00' },
+          ],
+          availability: 'Tue, Wed 5:00–7:00 PM',
+          paymentStatus: 'paid',
+          paymentConfirmedAt: now(),
+          matchStatus: 'Session Scheduled',
           status: 'matched',
           createdAt: now(),
         },
@@ -184,8 +204,13 @@
           tutorProfileId,
           studentId,
           parentUserId: parentId,
-          status: 'approved',
+          status: 'Session Scheduled',
+          matchStatus: 'Session Scheduled',
+          matchScore: 92,
+          matchPercent: 92,
+          sharedInterests: ['soccer', 'coding', 'science'],
           parentApprovedAt: now(),
+          tutorAcceptedAt: now(),
           createdAt: now(),
         },
       ],
@@ -365,6 +390,9 @@
     const request = {
       id: uid('request'),
       status: 'pending',
+      paymentStatus: 'unpaid',
+      matchStatus: 'Waiting for Payment',
+      mode: 'Online',
       createdAt: now(),
       ...data,
     };
@@ -485,31 +513,167 @@
     return getState().tutorProfiles.filter((t) => t.verified && !t.suspended);
   }
 
-  function createMatch(requestId, tutorProfileId, studentId, parentUserId) {
+  function updateTutoringRequest(requestId, updates) {
+    write((s) => {
+      const idx = s.tutoringRequests.findIndex((r) => r.id === requestId);
+      if (idx >= 0) s.tutoringRequests[idx] = { ...s.tutoringRequests[idx], ...updates };
+    });
+  }
+
+  function confirmFirstPayment(requestId) {
+    write((s) => {
+      const req = s.tutoringRequests.find((r) => r.id === requestId);
+      if (!req) return;
+      req.paymentStatus = 'paid';
+      req.paymentConfirmedAt = now();
+      req.matchStatus = 'Ready for Matching';
+    });
+    runMatchingForRequest(requestId);
+  }
+
+  function runMatchingForRequest(requestId) {
+    const state = getState();
+    const req = state.tutoringRequests.find((r) => r.id === requestId);
+    if (!req || req.paymentStatus !== 'paid') return [];
+    const student = state.students.find((s) => s.id === req.studentId);
+    const results = PSMatching.findMatches(req, getVerifiedTutors(), student, 3);
+    write((s) => {
+      const r = s.tutoringRequests.find((x) => x.id === requestId);
+      if (!r) return;
+      r.matchStatus = results.length ? 'Matches Found' : 'No Match Available';
+      r.recommendedTutorIds = results.map((x) => x.tutor.id);
+    });
+    return results;
+  }
+
+  function createMatch(requestId, tutorProfileId, studentId, parentUserId, matchMeta = {}) {
     const match = {
       id: uid('match'),
       requestId,
       tutorProfileId,
       studentId,
       parentUserId,
-      status: 'suggested',
+      status: 'Parent Reviewing',
+      matchStatus: 'Parent Reviewing',
       createdAt: now(),
+      ...matchMeta,
     };
     write((s) => {
       s.matches.push(match);
-      const req = s.tutoringRequests.find((r) => r.id === requestId);
-      if (req) req.status = 'matched';
     });
     return match;
+  }
+
+  function parentSelectTutor(requestId, tutorProfileId, matchMeta) {
+    const state = getState();
+    const req = state.tutoringRequests.find((r) => r.id === requestId);
+    if (!req) return null;
+    let match = state.matches.find(
+      (m) => m.requestId === requestId && m.tutorProfileId === tutorProfileId
+    );
+    if (!match) {
+      match = createMatch(requestId, tutorProfileId, req.studentId, req.parentUserId, matchMeta);
+    }
+    write((s) => {
+      const m = s.matches.find((x) => x.id === match.id);
+      if (m) {
+        Object.assign(m, matchMeta, {
+          status: 'Tutor Approval Pending',
+          matchStatus: 'Tutor Approval Pending',
+          parentSelectedAt: now(),
+        });
+      }
+      const r = s.tutoringRequests.find((x) => x.id === requestId);
+      if (r) r.matchStatus = 'Tutor Approval Pending';
+    });
+    return match;
+  }
+
+  function tutorAcceptMatch(matchId) {
+    write((s) => {
+      const match = s.matches.find((m) => m.id === matchId);
+      if (!match) return;
+      match.status = 'Match Confirmed';
+      match.matchStatus = 'Match Confirmed';
+      match.tutorAcceptedAt = now();
+      const req = s.tutoringRequests.find((r) => r.id === match.requestId);
+      if (req) req.matchStatus = 'Match Confirmed';
+      const tutor = s.tutorProfiles.find((t) => t.id === match.tutorProfileId);
+      if (tutor) tutor.activeStudentCount = (tutor.activeStudentCount || 0) + 1;
+    });
+  }
+
+function tutorDeclineMatch(matchId) {
+  let requestId = null;
+  write((s) => {
+    const match = s.matches.find((m) => m.id === matchId);
+    if (!match) return;
+    match.status = 'Match Declined';
+    match.matchStatus = 'Match Declined';
+    match.declinedAt = now();
+    requestId = match.requestId;
+    const req = s.tutoringRequests.find((r) => r.id === match.requestId);
+    if (req) req.matchStatus = 'Matches Found';
+  });
+  if (requestId) runMatchingForRequest(requestId);
+}
+
+  function scheduleMatchSession(matchId, { date, startTime, subject, meetingLink }) {
+    let session = null;
+    write((s) => {
+      const match = s.matches.find((m) => m.id === matchId);
+      if (!match) return;
+      session = {
+        id: uid('session'),
+        matchId: match.id,
+        studentId: match.studentId,
+        tutorProfileId: match.tutorProfileId,
+        parentUserId: match.parentUserId,
+        subject: subject || 'Tutoring',
+        date,
+        startTime,
+        durationMinutes: 60,
+        mode: 'Online',
+        meetingLink: meetingLink || 'https://meet.google.com/peerscholars-session',
+        location: '',
+        status: 'Scheduled',
+        createdAt: now(),
+      };
+      s.sessions.push(session);
+      match.status = 'Session Scheduled';
+      match.matchStatus = 'Session Scheduled';
+      match.scheduledSessionId = session.id;
+      const req = s.tutoringRequests.find((r) => r.id === match.requestId);
+      if (req) req.matchStatus = 'Session Scheduled';
+    });
+    return session;
   }
 
   function approveMatch(matchId) {
     write((s) => {
       const match = s.matches.find((m) => m.id === matchId);
       if (!match) return;
-      match.status = 'approved';
+      match.status = 'Tutor Approval Pending';
+      match.matchStatus = 'Tutor Approval Pending';
       match.parentApprovedAt = now();
     });
+  }
+
+  function getPendingMatchesForTutor(tutorProfileId) {
+    return getState().matches.filter(
+      (m) =>
+        m.tutorProfileId === tutorProfileId &&
+        (m.matchStatus === 'Tutor Approval Pending' || m.status === 'Tutor Approval Pending')
+    );
+  }
+
+  function collectInterestTags(form, checkboxName, otherFieldName) {
+    const tags = [...form.querySelectorAll(`input[name="${checkboxName}"]:checked`)]
+      .map((c) => c.value)
+      .filter((v) => v !== 'other');
+    const other = form.querySelector(`[name="${otherFieldName}"]`)?.value?.trim();
+    if (other) tags.push(other);
+    return tags;
   }
 
   function createSession(data) {
@@ -585,8 +749,10 @@
       state: tutor.state,
       subjects: tutor.subjects,
       gradesCanTeach: tutor.gradesCanTeach,
-      availability: tutor.availability,
-      mode: tutor.mode,
+      availability: tutor.availabilitySlots?.length
+        ? PSAvailability.formatSlotsList(PSAvailability.parseSlots(tutor), 2)
+        : tutor.availability,
+      mode: 'Online',
       bio: tutor.bio,
       interests: tutor.interests,
       verified: tutor.verified,
@@ -613,6 +779,14 @@
     createStudent,
     createTutorProfile,
     createTutoringRequest,
+    updateTutoringRequest,
+    confirmFirstPayment,
+    runMatchingForRequest,
+    parentSelectTutor,
+    tutorAcceptMatch,
+    tutorDeclineMatch,
+    scheduleMatchSession,
+    getPendingMatchesForTutor,
     createParentVerification,
     confirmParentVerification,
     uploadSchoolDoc,
