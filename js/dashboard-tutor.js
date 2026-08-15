@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
   root.innerHTML = `
     ${welcome ? '<div class="alert alert-success">Application submitted! Complete verification steps below.</div>' : ''}
     ${tutor.suspended ? '<div class="alert alert-error">Your account is suspended. Contact support@peerscholars.com.</div>' : ''}
-    ${tutor.verified ? '<div class="alert alert-success"><span class="verified-badge">Verified Tutor ✓</span> You can receive matches and teach sessions.</div>' : ''}
+    ${tutor.verified ? `<div class="alert alert-success">${PSUtils.verifiedTutorBadge()} You can receive matches and teach sessions.</div>` : ''}
 
     <div class="dash-stats-row">
       <div class="dash-stat"><div class="num">${tutor.verified ? '✓' : '…'}</div><div class="lbl">Verification</div></div>
@@ -47,9 +47,10 @@ document.addEventListener('DOMContentLoaded', () => {
       <p class="field-hint">Current stage: <strong>${PSUtils.esc(stage)}</strong></p>
       <ul class="status-list">${stages}</ul>
       <div style="margin-top:1rem;">
-        <p><strong>Parent/guardian:</strong> ${PSUtils.esc(tutor.parentVerificationStatus)}</p>
-        <p><strong>School enrollment doc:</strong> ${PSUtils.esc(tutor.schoolDocStatus)} ${tutor.schoolDocName ? `(${PSUtils.esc(tutor.schoolDocName)})` : ''}</p>
-        <p><strong>Interview:</strong> ${PSUtils.esc(tutor.interviewStatus)}</p>
+        <p><strong>Parent/guardian:</strong> ${PSUtils.esc(tutor.parentVerificationStatus || 'Parent Verification Pending')}</p>
+        <p><strong>School ID:</strong> ${tutor.schoolIdUploaded || tutor.schoolIdData ? 'Uploaded ✓' : 'Not uploaded'}</p>
+        <p><strong>Verification photo:</strong> ${tutor.tutorPhotoUploaded || tutor.tutorPhotoData ? 'Uploaded ✓' : 'Not uploaded'}</p>
+        <p><strong>Admin review:</strong> ${PSUtils.esc(tutor.adminDecision || 'Pending')}</p>
         <p><strong>Code of Conduct:</strong> ${tutor.codeOfConductAccepted ? 'Accepted' : 'Not yet accepted'}</p>
       </div>
     </div>

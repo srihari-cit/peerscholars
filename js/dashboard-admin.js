@@ -65,7 +65,7 @@ function renderApplications(state) {
         <td>${PSUtils.esc(t.firstName)} ${PSUtils.esc(t.lastName)}</td>
         <td>${PSUtils.esc(t.school)}</td>
         <td>${PSUtils.esc(PSUtils.tutorVerificationStage(t))}</td>
-        <td>${t.verified ? PSUtils.badge('Verified ✓', 'green') : PSUtils.badge('Pending', 'blue')}</td>
+        <td>${t.verified ? PSUtils.badge('✓ Verified', 'green') : PSUtils.badge(t.parentVerificationStatus || 'Pending', 'blue')}</td>
         <td><a href="admin-dashboard.html?tab=verification&tutor=${t.id}">Review</a></td>
       </tr>`).join('')}</tbody></table>
     </div>`;
@@ -78,46 +78,78 @@ function renderVerification(state) {
 
   if (!tutor) return '<p class="field-hint">No tutor applications yet.</p>';
 
+  const schoolIdData = tutor.schoolIdData || tutor.schoolDocData;
+  const schoolIdName = tutor.schoolIdName || tutor.schoolDocName;
+  const parentName =
+    tutor.parentName ||
+    [tutor.parentFirstName, tutor.parentLastName].filter(Boolean).join(' ') ||
+    '—';
+  const parentStatus = tutor.parentVerificationStatus || 'Pending';
+  const parentVerifiedDate = tutor.parentVerifiedAt
+    ? new Date(tutor.parentVerifiedAt).toLocaleString()
+    : '—';
+
+  const adminDecisions = ['Pending', 'Verified', 'Needs More Information', 'Rejected'];
+
   return `
     <div class="dash-panel">
-      <h2>Verify: ${PSUtils.esc(tutor.firstName)} ${PSUtils.esc(tutor.lastName)}</h2>
-      <p>Grade ${PSUtils.esc(tutor.grade)} · ${PSUtils.esc(tutor.school)} · ${PSUtils.esc(tutor.city)}, ${PSUtils.esc(tutor.state)}</p>
-      <p class="field-hint">Parent: ${PSUtils.esc(tutor.parentName)} (${PSUtils.esc(tutor.parentEmail)}) — <strong>${PSUtils.esc(tutor.parentVerificationStatus)}</strong></p>
+      <h2>Tutor verification review</h2>
+      <table class="data-table">
+        <tbody>
+          <tr><th>Tutor name</th><td>${PSUtils.esc(tutor.firstName)} ${PSUtils.esc(tutor.lastName)}</td></tr>
+          <tr><th>School</th><td>${PSUtils.esc(tutor.school)}</td></tr>
+          <tr><th>Grade</th><td>${PSUtils.esc(tutor.grade)}</td></tr>
+          <tr><th>Parent name</th><td>${PSUtils.esc(parentName)}</td></tr>
+          <tr><th>Parent email</th><td>${PSUtils.esc(tutor.parentEmail || '—')}</td></tr>
+          <tr><th>Parent phone</th><td>${PSUtils.esc(tutor.parentPhone || '—')}</td></tr>
+          <tr><th>School ID uploaded</th><td>${tutor.schoolIdUploaded || schoolIdData ? 'Yes' : 'No'}</td></tr>
+          <tr><th>Tutor photo uploaded</th><td>${tutor.tutorPhotoUploaded || tutor.tutorPhotoData ? 'Yes' : 'No'}</td></tr>
+          <tr><th>Parent verification</th><td>${PSUtils.esc(parentStatus)}</td></tr>
+          <tr><th>Parent verification date</th><td>${PSUtils.esc(parentVerifiedDate)}</td></tr>
+          <tr><th>Application status</th><td>${PSUtils.esc(tutor.applicationStatus || '—')}</td></tr>
+        </tbody>
+      </table>
     </div>
 
-    <div class="dash-panel">
-      <h3>School enrollment document</h3>
-      <p>Status: <strong>${PSUtils.esc(tutor.schoolDocStatus)}</strong> ${tutor.schoolDocName ? `· ${PSUtils.esc(tutor.schoolDocName)}` : ''}</p>
-      ${tutor.schoolDocData ? `<p><a href="${tutor.schoolDocData}" download="${PSUtils.esc(tutor.schoolDocName)}" class="btn btn-small btn-secondary">Download document (admin only)</a></p>` : '<p class="field-hint">No document uploaded.</p>'}
-      <div class="btn-row" style="margin-top:0.75rem;">
-        <button class="btn btn-small btn-primary" data-school-status="Under review">Mark under review</button>
-        <button class="btn btn-small btn-green" data-school-status="Approved">Approve document</button>
-        <button class="btn btn-small btn-secondary" data-school-status="Needs another document">Request new document</button>
-        <button class="btn btn-small" style="background:#fdeeee;color:#9b2c2c;" data-school-status="Rejected">Reject</button>
+    <div class="dash-panel admin-private-docs">
+      <h3>Private verification materials <span class="field-hint">(admin only — never public)</span></h3>
+      <div class="verify-doc-grid">
+        <div>
+          <h4>School ID</h4>
+          ${
+            schoolIdData
+              ? `<img src="${schoolIdData}" alt="School ID" class="verify-doc-preview" />
+                 <p class="field-hint">${PSUtils.esc(schoolIdName || '')}</p>`
+              : '<p class="field-hint">Not uploaded</p>'
+          }
+        </div>
+        <div>
+          <h4>Tutor verification photo</h4>
+          ${
+            tutor.tutorPhotoData
+              ? `<img src="${tutor.tutorPhotoData}" alt="Tutor verification photo" class="verify-doc-preview" />
+                 <p class="field-hint">${PSUtils.esc(tutor.tutorPhotoName || '')}</p>`
+              : '<p class="field-hint">Not uploaded</p>'
+          }
+        </div>
       </div>
     </div>
 
     <div class="dash-panel">
-      <h3>PeerScholars interview</h3>
-      <div class="form-row"><label>Status</label>
-        <select id="interview-status">
-          ${['Not scheduled', 'Scheduled', 'Completed', 'Passed', 'Needs follow-up', 'Failed'].map((s) => `<option ${tutor.interviewStatus === s ? 'selected' : ''}>${s}</option>`).join('')}
+      <h3>Admin decision</h3>
+      <div class="form-row">
+        <label for="admin-decision">Decision</label>
+        <select id="admin-decision">
+          ${adminDecisions.map((d) => `<option ${tutor.adminDecision === d ? 'selected' : ''}>${d}</option>`).join('')}
         </select>
       </div>
-      <div class="form-row"><label>Admin notes</label><textarea id="interview-notes" rows="4">${PSUtils.esc(tutor.interviewNotes || '')}</textarea></div>
-      <p class="field-hint">Suggested questions: school, grade, subjects, why tutor, explain a concept, handling confusion, unknown answers, inappropriate behavior, missing parent, in-person safety.</p>
-      <button class="btn btn-primary btn-small" id="save-interview">Save interview</button>
-    </div>
-
-    <div class="dash-panel">
-      <h3>Final admin review</h3>
+      <div class="form-row"><label for="interview-notes">Admin notes</label><textarea id="interview-notes" rows="4">${PSUtils.esc(tutor.interviewNotes || '')}</textarea></div>
       <div class="btn-row">
-        <button class="btn btn-green" data-final="Approved">Approve tutor</button>
-        <button class="btn btn-secondary" data-final="Rejected">Reject</button>
-        <button class="btn btn-secondary" data-suspend="true">Suspend tutor</button>
-        <button class="btn btn-secondary" data-suspend="false">Reactivate tutor</button>
+        <button class="btn btn-primary btn-small" id="save-admin-decision">Save decision</button>
+        <button class="btn btn-secondary btn-small" data-suspend="true">Suspend tutor</button>
+        <button class="btn btn-secondary btn-small" data-suspend="false">Reactivate tutor</button>
       </div>
-      <p class="field-hint" style="margin-top:0.75rem;">Tutor becomes verified only when parent confirmed, school doc approved, interview passed, code of conduct accepted, and final review approved.</p>
+      <p class="field-hint" style="margin-top:0.75rem;">A tutor receives the ✓ PeerScholars Verified Tutor badge only when parent verification is complete, both photos are uploaded, Code of Conduct is accepted, and admin decision is Verified.</p>
     </div>
 
     <input type="hidden" id="current-tutor-id" value="${tutor.id}">
@@ -128,26 +160,14 @@ function bindVerification(state) {
   const tutorId = document.getElementById('current-tutor-id')?.value;
   if (!tutorId) return;
 
-  document.querySelectorAll('[data-school-status]').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      PSStore.adminUpdateTutor(tutorId, { schoolDocStatus: btn.dataset.schoolStatus });
-      location.reload();
-    });
-  });
-
-  document.getElementById('save-interview')?.addEventListener('click', () => {
+  document.getElementById('save-admin-decision')?.addEventListener('click', () => {
+    const decision = document.getElementById('admin-decision').value;
     PSStore.adminUpdateTutor(tutorId, {
-      interviewStatus: document.getElementById('interview-status').value,
+      adminDecision: decision,
+      finalReviewStatus: decision === 'Verified' ? 'Approved' : decision === 'Rejected' ? 'Rejected' : 'Pending',
       interviewNotes: document.getElementById('interview-notes').value,
     });
     location.reload();
-  });
-
-  document.querySelectorAll('[data-final]').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      PSStore.adminUpdateTutor(tutorId, { finalReviewStatus: btn.dataset.final });
-      location.reload();
-    });
   });
 
   document.querySelectorAll('[data-suspend]').forEach((btn) => {

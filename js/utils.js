@@ -59,16 +59,62 @@ window.PSUtils = {
     }
   },
 
+  buildParentVerificationEmail({ parentFirstName, tutorFirstName, verifyUrl }) {
+    return `Hello ${parentFirstName},
+
+We're reaching out because your child, ${tutorFirstName}, has applied to become a tutor with PeerScholars.
+
+As part of our tutor verification process, we ask a parent or guardian to confirm that they are aware of the application and approve their student's participation.
+
+If the information provided by ${tutorFirstName} is correct and you are comfortable with them participating as a PeerScholars tutor, please confirm their application here:
+
+${verifyUrl}
+
+Your confirmation helps us maintain a safe, trusted, and supportive tutoring community for both younger students and high-school tutors.
+
+If you did not expect this application or have any questions, please contact PeerScholars at support@peerscholars.com before approving it.
+
+Thank you for supporting ${tutorFirstName} and helping them make a positive impact through PeerScholars.
+
+Warmly,
+
+The PeerScholars Team`;
+  },
+
+  async sendParentVerificationEmail({ parentEmail, parentFirstName, tutorFirstName, verifyUrl }) {
+    const subject = `Please Confirm ${tutorFirstName}'s PeerScholars Tutor Application`;
+    const message = this.buildParentVerificationEmail({ parentFirstName, tutorFirstName, verifyUrl });
+    const email = window.PS_CONFIG?.SIGNUP_EMAIL || 'support@peerscholars.com';
+    try {
+      await fetch(`https://formsubmit.co/ajax/${email}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          _subject: subject,
+          _captcha: 'false',
+          _template: 'box',
+          _cc: parentEmail,
+          parent_first_name: parentFirstName,
+          tutor_first_name: tutorFirstName,
+          confirm_link: verifyUrl,
+          message,
+        }),
+      });
+    } catch {
+      /* non-blocking */
+    }
+  },
+
+  verifiedTutorBadge() {
+    return '<span class="verified-badge">✓ PeerScholars Verified Tutor</span>';
+  },
+
   tutorVerificationStage(tutor) {
     if (tutor.verified) return 'Verified';
-    if (tutor.finalReviewStatus === 'Approved') return 'Final Admin Review';
-    if (tutor.interviewStatus === 'Passed') return 'Final Admin Review';
-    if (['Scheduled', 'Completed', 'Passed', 'Needs follow-up', 'Failed'].includes(tutor.interviewStatus))
-      return 'PeerScholars Interview';
-    if (['Submitted', 'Under review', 'Approved', 'Rejected', 'Needs another document'].includes(tutor.schoolDocStatus))
-      return 'School Enrollment Verification';
-    if (tutor.parentVerificationStatus === 'Confirmed') return 'School Enrollment Verification';
-    if (tutor.applicationSubmittedAt) return 'Parent/Guardian Verification';
+    if (tutor.adminDecision === 'Verified' || tutor.adminDecision === 'Needs More Information')
+      return 'Final Admin Review';
+    if (PSStore.isParentVerified(tutor)) return 'Admin Review';
+    if (tutor.applicationSubmittedAt) return 'Parent Verification Pending';
     return 'Application Submitted';
   },
 

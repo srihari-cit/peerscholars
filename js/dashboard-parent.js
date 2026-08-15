@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
       .map(({ tutor, score }) => {
         const already = matches.find((m) => m.tutorProfileId === tutor.id);
         const pub = PSStore.getTutorPublicProfile(tutor);
-        const badge = pub.verified ? '<span class="verified-badge">Verified Tutor ✓</span>' : '';
+        const badge = pub.verified ? PSUtils.verifiedTutorBadge() : '';
         return `<article class="tutor-card">
           <h3>${PSUtils.esc(pub.firstName)} ${badge}</h3>
           <p class="tutor-card-meta">

@@ -184,6 +184,44 @@
   line-height: 1.6;
 }
 
+.verify-info-card {
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius);
+  padding: 1rem;
+  margin: 1rem 0;
+  font-size: 0.9rem;
+  line-height: 1.7;
+}
+.verify-info-card p { margin: 0.25rem 0; }
+
+.verify-checkbox {
+  display: flex;
+  gap: 0.65rem;
+  align-items: flex-start;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  margin: 1rem 0 1.25rem;
+}
+
+.verify-doc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+.verify-doc-preview {
+  max-width: 100%;
+  max-height: 280px;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius);
+  object-fit: contain;
+  background: var(--gray-50);
+}
+.admin-private-docs {
+  border-color: #c8daf8;
+  background: #fafcff;
+}
+
 @media (max-width: 960px) {
   .dash-layout { grid-template-columns: 1fr; }
   .dash-sidebar { position: static; }

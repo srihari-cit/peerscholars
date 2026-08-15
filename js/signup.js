@@ -62,7 +62,7 @@ function showForm(role) {
     signupIntro.textContent =
       role === 'family'
         ? 'Create your parent account and tell us about your K–8 student. Tutoring is $12.99/hour.'
-        : 'Apply to become a verified PeerScholars tutor. Tutors earn $9/hour for completed sessions.';
+        : 'Apply to become a PeerScholars tutor. Upload your school ID and photo, then we\'ll email your parent/guardian to confirm.';
   }
 }
 
@@ -78,15 +78,19 @@ function validateFamily() {
 function validateTutor() {
   const grades = collectCheckboxValues('grades-can-teach');
   if (!grades) return 'Please select at least one grade level you can tutor.';
-  if (!form.querySelector('#tutor-parent-consent')?.checked) {
-    return 'Parent/guardian consent is required for minor tutors.';
-  }
   if (!form.querySelector('#code-of-conduct-read')?.checked) {
     return 'Please confirm you have read the Tutor Code of Conduct.';
   }
-  const file = form.querySelector('#school-doc')?.files?.[0];
-  if (!file) return 'Please upload a school-issued enrollment document.';
-  if (file.size > 5 * 1024 * 1024) return 'School document must be under 5 MB.';
+  const schoolId = form.querySelector('#school-id')?.files?.[0];
+  const tutorPhoto = form.querySelector('#tutor-photo')?.files?.[0];
+  if (!schoolId) return 'Please upload a clear photo of your school ID.';
+  if (!tutorPhoto) return 'Please upload a clear photo of yourself.';
+  if (schoolId.size > 5 * 1024 * 1024) return 'School ID photo must be under 5 MB.';
+  if (tutorPhoto.size > 5 * 1024 * 1024) return 'Your photo must be under 5 MB.';
+  const parentEmail = form.querySelector('#parent-guardian-email')?.value.trim();
+  if (!parentEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(parentEmail)) {
+    return 'Please enter a valid parent/guardian email address.';
+  }
   return null;
 }
 
@@ -194,19 +198,30 @@ async function submitTutor(fd) {
 
   if (user.error) throw new Error(user.error);
 
-  const file = form.querySelector('#school-doc').files[0];
-  const fileData = await PSUtils.readFileAsDataURL(file);
+  const schoolIdFile = form.querySelector('#school-id').files[0];
+  const tutorPhotoFile = form.querySelector('#tutor-photo').files[0];
+  const schoolIdData = await PSUtils.readFileAsDataURL(schoolIdFile);
+  const tutorPhotoData = await PSUtils.readFileAsDataURL(tutorPhotoFile);
+
+  const parentFirstName = fd.get('parent-first-name');
+  const parentLastName = fd.get('parent-last-name');
+  const parentEmail = fd.get('parent-guardian-email');
+  const parentPhone = fd.get('parent-guardian-phone');
+  const tutorFirstName = fd.get('tutor-first-name');
 
   const profile = PSStore.createTutorProfile(user.id, {
-    firstName: fd.get('tutor-first-name'),
+    firstName: tutorFirstName,
     lastName: fd.get('tutor-last-name'),
     age: Number(fd.get('age')),
     grade: fd.get('tutor-grade'),
     school: fd.get('school'),
     city: fd.get('city'),
     state: fd.get('state'),
-    parentName: fd.get('parent-guardian-name'),
-    parentEmail: fd.get('parent-guardian-email'),
+    parentFirstName,
+    parentLastName,
+    parentName: `${parentFirstName} ${parentLastName}`.trim(),
+    parentEmail,
+    parentPhone,
     subjects: fd.get('subjects-teach'),
     gradesCanTeach: [...form.querySelectorAll('input[name="grades-can-teach"]:checked')].map(
       (c) => c.value
@@ -219,42 +234,48 @@ async function submitTutor(fd) {
     interests: fd.get('interests'),
     whyTutor: fd.get('why-tutor'),
     experience: fd.get('experience'),
-    parentConsent: true,
-    schoolDocName: file.name,
-    schoolDocData: fileData,
+    schoolIdUploaded: true,
+    schoolIdName: schoolIdFile.name,
+    schoolIdData,
+    tutorPhotoUploaded: true,
+    tutorPhotoName: tutorPhotoFile.name,
+    tutorPhotoData,
     schoolDocStatus: 'Submitted',
-    schoolDocSubmittedAt: PSStore.now(),
+    applicationStatus: 'Parent Verification Pending',
+    parentVerificationStatus: 'Parent Verification Pending',
+    adminDecision: 'Pending',
   });
 
   const pv = PSStore.createParentVerification(
     profile.id,
-    fd.get('parent-guardian-email'),
-    fd.get('parent-guardian-name')
+    parentEmail,
+    `${parentFirstName} ${parentLastName}`.trim(),
+    parentFirstName
   );
 
-  const verifyUrl = `${window.location.origin}${window.location.pathname.replace('signup.html', '')}parent-verify.html?token=${pv.token}`;
+  const basePath = window.location.pathname.replace(/[^/]*$/, '');
+  const verifyUrl = `${window.location.origin}${basePath}parent-verify.html?token=${pv.token}`;
 
   await PSUtils.notifySupport('New PeerScholars Tutor Application', {
-    ...Object.fromEntries(fd),
-    school_document: file.name,
+    tutor_name: `${tutorFirstName} ${fd.get('tutor-last-name')}`,
+    school: fd.get('school'),
+    grade: fd.get('tutor-grade'),
+    parent_name: `${parentFirstName} ${parentLastName}`,
+    parent_email: parentEmail,
+    parent_phone: parentPhone,
+    school_id_uploaded: 'Yes',
+    tutor_photo_uploaded: 'Yes',
+    status: 'Parent Verification Pending',
     parent_verification_link: verifyUrl,
-    note: 'School document stored securely in admin dashboard only.',
+    note: 'School ID and verification photo stored securely — admin dashboard only.',
   });
 
-  await PSUtils.notifySupport(
-    `PeerScholars: Parent verification needed for ${fd.get('tutor-first-name')} ${fd.get('tutor-last-name')}`,
-    {
-      _cc: fd.get('parent-guardian-email'),
-      message: `Hello ${fd.get('parent-guardian-name')},
-
-Your student has applied to tutor through PeerScholars. Please confirm you approve by visiting:
-
-${verifyUrl}
-
-Thank you,
-PeerScholars`,
-    }
-  );
+  await PSUtils.sendParentVerificationEmail({
+    parentEmail,
+    parentFirstName,
+    tutorFirstName,
+    verifyUrl,
+  });
 
   window.location.href = 'tutor-dashboard.html?welcome=1';
 }

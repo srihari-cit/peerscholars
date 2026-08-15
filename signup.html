@@ -135,10 +135,15 @@
               <div class="form-row" style="margin:0"><label for="tutor-state">State *</label><input id="tutor-state" name="state" maxlength="2" required placeholder="WA"></div>
             </div>
 
-            <p class="form-divider">Parent / guardian (required for minors)</p>
+            <p class="form-divider">Parent / guardian information</p>
+            <p class="field-hint" style="margin-bottom:0.75rem;">We'll email your parent or guardian to confirm your application. You won't be fully verified until they approve.</p>
             <div class="form-row half">
-              <div class="form-row" style="margin:0"><label for="parent-guardian-name">Parent/guardian name *</label><input id="parent-guardian-name" name="parent-guardian-name" required></div>
+              <div class="form-row" style="margin:0"><label for="parent-first-name">Parent/guardian first name *</label><input id="parent-first-name" name="parent-first-name" required></div>
+              <div class="form-row" style="margin:0"><label for="parent-last-name">Parent/guardian last name *</label><input id="parent-last-name" name="parent-last-name" required></div>
+            </div>
+            <div class="form-row half">
               <div class="form-row" style="margin:0"><label for="parent-guardian-email">Parent/guardian email *</label><input type="email" id="parent-guardian-email" name="parent-guardian-email" required></div>
+              <div class="form-row" style="margin:0"><label for="parent-guardian-phone">Parent/guardian phone *</label><input type="tel" id="parent-guardian-phone" name="parent-guardian-phone" required></div>
             </div>
 
             <p class="form-divider">Tutoring info</p>
@@ -176,14 +181,21 @@
             <div class="form-row"><label for="why-tutor">Why do you want to tutor? *</label><textarea id="why-tutor" name="why-tutor" rows="2" required></textarea></div>
             <div class="form-row"><label for="experience">Previous tutoring/teaching experience</label><textarea id="experience" name="experience" rows="2"></textarea></div>
 
-            <p class="form-divider">School enrollment verification</p>
+            <p class="form-divider">Identity verification</p>
+            <p class="field-hint" style="margin-bottom:0.75rem;">These materials are private and only visible to PeerScholars administrators — never on your public profile.</p>
+
             <div class="form-row">
-              <label for="school-doc">Upload school-issued document *</label>
-              <input type="file" id="school-doc" name="school-doc" accept=".pdf,.jpg,.jpeg,.png" required>
-              <p class="field-hint">Upload ONE document showing your name and current school enrollment (student ID, schedule, report card, etc.). You may cover information PeerScholars does not need. Admin-only — never shown to parents.</p>
+              <label for="school-id">A. School ID *</label>
+              <input type="file" id="school-id" name="school-id" accept=".jpg,.jpeg,.png,.pdf" required>
+              <p class="field-hint">Please upload a clear photo of your current school ID. For your privacy, you may cover any information that PeerScholars does not need to verify your enrollment, such as student ID numbers, barcodes, or other sensitive details. Your school name, your name, and your photo should remain visible.</p>
             </div>
 
-            <label style="display:flex;gap:0.5rem;font-size:0.875rem;margin:0.75rem 0;"><input type="checkbox" id="tutor-parent-consent" required> I confirm my parent/guardian has approved this application.</label>
+            <div class="form-row">
+              <label for="tutor-photo">B. Your photo *</label>
+              <input type="file" id="tutor-photo" name="tutor-photo" accept=".jpg,.jpeg,.png" required>
+              <p class="field-hint">Please upload a clear, recent photo of yourself so we can confirm that the person applying matches the student shown on the school ID. This photo is used only for verification and will not automatically become your public profile photo.</p>
+            </div>
+
             <label style="display:flex;gap:0.5rem;font-size:0.875rem;margin:0.75rem 0;"><input type="checkbox" id="code-of-conduct-read" required> I have read the <a href="index.html#code-of-conduct">Tutor Code of Conduct</a>.</label>
           </div>
 

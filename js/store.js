@@ -126,8 +126,11 @@
           school: 'Bellevue High School',
           city: 'Bellevue',
           state: 'WA',
+          parentFirstName: 'Pat',
+          parentLastName: 'Lee',
           parentName: 'Pat Lee',
           parentEmail: 'parent.lee@email.com',
+          parentPhone: '(425) 555-0199',
           subjects: 'Math, Science',
           gradesCanTeach: ['3rd', '4th', '5th', '6th'],
           availability: 'Mon–Thu after 3:30pm',
@@ -138,13 +141,19 @@
           experience: 'Helped classmates and younger siblings with homework.',
           parentConsent: true,
           applicationSubmittedAt: now(),
-          parentVerificationStatus: 'Confirmed',
+          applicationStatus: 'Parent Verified',
+          parentVerificationStatus: 'Parent Verified',
           parentVerifiedAt: now(),
+          schoolIdUploaded: true,
+          schoolIdName: 'demo_student_id.jpg',
+          schoolIdData: null,
+          tutorPhotoUploaded: true,
+          tutorPhotoName: 'demo_tutor_photo.jpg',
+          tutorPhotoData: null,
           schoolDocStatus: 'Approved',
-          schoolDocName: 'demo_schedule.pdf',
-          schoolDocData: null,
           interviewStatus: 'Passed',
           interviewNotes: 'Strong communicator. Explained fractions clearly.',
+          adminDecision: 'Verified',
           finalReviewStatus: 'Approved',
           codeOfConductAccepted: true,
           codeOfConductAcceptedAt: now(),
@@ -314,12 +323,21 @@
       id: uid('tutor'),
       userId,
       applicationSubmittedAt: now(),
-      parentVerificationStatus: 'Pending',
+      applicationStatus: 'Parent Verification Pending',
+      parentVerificationStatus: 'Parent Verification Pending',
+      parentVerifiedAt: null,
+      schoolIdUploaded: false,
+      schoolIdName: '',
+      schoolIdData: null,
+      tutorPhotoUploaded: false,
+      tutorPhotoName: '',
+      tutorPhotoData: null,
       schoolDocStatus: 'Not submitted',
       schoolDocName: '',
       schoolDocData: null,
       interviewStatus: 'Not scheduled',
       interviewNotes: '',
+      adminDecision: 'Pending',
       finalReviewStatus: 'Pending',
       codeOfConductAccepted: false,
       verified: false,
@@ -327,6 +345,18 @@
       createdAt: now(),
       ...data,
     };
+    if (profile.schoolIdData) {
+      profile.schoolIdUploaded = true;
+      profile.schoolDocStatus = 'Submitted';
+      profile.schoolDocName = profile.schoolIdName;
+      profile.schoolDocData = profile.schoolIdData;
+    }
+    if (profile.tutorPhotoData) profile.tutorPhotoUploaded = true;
+    if (profile.parentFirstName || profile.parentLastName) {
+      profile.parentName = [profile.parentFirstName, profile.parentLastName]
+        .filter(Boolean)
+        .join(' ');
+    }
     write((s) => s.tutorProfiles.push(profile));
     return profile;
   }
@@ -342,7 +372,7 @@
     return request;
   }
 
-  function createParentVerification(tutorProfileId, parentEmail, parentName) {
+  function createParentVerification(tutorProfileId, parentEmail, parentName, parentFirstName) {
     const token = uid('pv');
     const record = {
       id: uid('parentverify'),
@@ -350,6 +380,7 @@
       token,
       parentEmail: parentEmail.trim().toLowerCase(),
       parentName,
+      parentFirstName: parentFirstName || parentName?.split(' ')[0] || '',
       status: 'Pending',
       createdAt: now(),
     };
@@ -357,7 +388,8 @@
       s.parentVerifications.push(record);
       const tutor = s.tutorProfiles.find((t) => t.id === tutorProfileId);
       if (tutor) {
-        tutor.parentVerificationStatus = 'Pending';
+        tutor.parentVerificationStatus = 'Parent Verification Pending';
+        tutor.applicationStatus = 'Parent Verification Pending';
         tutor.parentVerificationToken = token;
       }
     });
@@ -373,10 +405,11 @@
       record.confirmedAt = now();
       const tutor = s.tutorProfiles.find((t) => t.id === record.tutorProfileId);
       if (tutor) {
-        tutor.parentVerificationStatus = 'Confirmed';
+        tutor.parentVerificationStatus = 'Parent Verified';
+        tutor.applicationStatus = 'Parent Verified';
         tutor.parentVerifiedAt = now();
       }
-      result = record;
+      result = { record, tutor };
     });
     return result;
   }
@@ -399,13 +432,19 @@
     });
   }
 
+  function isParentVerified(tutor) {
+    return ['Parent Verified', 'Confirmed'].includes(tutor.parentVerificationStatus);
+  }
+
   function recomputeTutorVerified(tutor) {
+    const hasSchoolId = tutor.schoolIdUploaded || tutor.schoolIdData || tutor.schoolDocData;
+    const hasTutorPhoto = tutor.tutorPhotoUploaded || tutor.tutorPhotoData;
     return (
       tutor.applicationSubmittedAt &&
-      tutor.parentVerificationStatus === 'Confirmed' &&
-      tutor.schoolDocStatus === 'Approved' &&
-      tutor.interviewStatus === 'Passed' &&
-      tutor.finalReviewStatus === 'Approved' &&
+      isParentVerified(tutor) &&
+      hasSchoolId &&
+      hasTutorPhoto &&
+      tutor.adminDecision === 'Verified' &&
       tutor.codeOfConductAccepted &&
       !tutor.suspended
     );
@@ -554,6 +593,10 @@
     };
   }
 
+  function getTutorById(tutorProfileId) {
+    return getState().tutorProfiles.find((t) => t.id === tutorProfileId);
+  }
+
   window.PSStore = {
     getState,
     save,
@@ -590,6 +633,8 @@
     recordPayment,
     resetDemoData,
     getTutorPublicProfile,
+    getTutorById,
+    isParentVerified,
     recomputeTutorVerified,
     seedDemoState,
   };
