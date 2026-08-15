@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Report a Concern — PeerScholars</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+  <header class="site-header"><nav class="nav container"><a href="index.html" class="logo"><span class="logo-icon">PS</span>PeerScholars</a></nav></header>
+  <main class="section"><div class="container form-page">
+    <div class="form-card">
+      <h1 style="margin:0 0 0.5rem;font-size:1.35rem;">Report a Concern</h1>
+      <p class="field-hint">Parents and tutors can report safety concerns, inappropriate behavior, missed sessions, or communication problems. Reports go to PeerScholars administrators.</p>
+      <p class="alert alert-warn" id="report-login-note" hidden>You're not logged in — please include your email so we can follow up.</p>
+      <form id="report-form" class="inline-form" style="margin-top:1rem;">
+        <div class="form-row"><label for="type">Concern type *</label>
+          <select id="type" name="type" required>
+            <option value="">Select</option>
+            <option>Safety concern</option>
+            <option>Inappropriate behavior</option>
+            <option>Missed session</option>
+            <option>Communication problem</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="form-row"><label for="email">Your email *</label><input type="email" id="email" name="email" required></div>
+        <div class="form-row"><label for="description">Describe what happened *</label><textarea id="description" name="description" rows="5" required></textarea></div>
+        <button type="submit" class="btn btn-primary">Submit report</button>
+      </form>
+      <div class="alert alert-success" id="report-success" hidden>Thank you. Your report was sent to our team. Status: New — we will review it promptly.</div>
+    </div>
+  </div></main>
+  <script src="js/config.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/report-concern.js"></script>
+</body>
+</html>

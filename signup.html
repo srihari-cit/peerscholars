@@ -10,19 +10,20 @@
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-  <div class="top-bar">Affordable tutoring for K–8 students · Verified high school tutors · $9.99/hour</div>
+  <div class="top-bar">Affordable tutoring for K–8 students · Verified high school tutors · $12.99/hour</div>
   <header class="site-header">
     <nav class="nav container">
       <a href="index.html" class="logo"><span class="logo-icon">PS</span>PeerScholars</a>
       <button class="nav-toggle" aria-label="Open menu" aria-expanded="false"><span></span><span></span><span></span></button>
       <div class="nav-center">
         <a href="index.html">Home</a>
-        <a href="index.html#why-us">Why Us</a>
         <a href="index.html#pricing">Pricing</a>
         <a href="index.html#for-tutors">For Tutors</a>
-        <a href="index.html#about">About</a>
+        <a href="faq.html">FAQ</a>
+        <a href="login.html" data-auth="guest">Log In</a>
+        <a href="parent-dashboard.html" data-auth="user" data-auth-dashboard hidden>Dashboard</a>
       </div>
-      <div class="nav-right"><a href="signup.html" class="btn btn-small btn-primary">Sign Up</a></div>
+      <div class="nav-right"><a href="signup.html" class="btn btn-small btn-primary" data-auth="guest">Sign Up</a></div>
     </nav>
   </header>
 
@@ -30,34 +31,25 @@
     <section class="page-hero center compact">
       <div class="container">
         <p class="eyebrow">Get Started</p>
-        <h1>Sign up — we'll call you when we're free</h1>
+        <h1>Create your PeerScholars account</h1>
         <p id="signup-intro">Choose whether you're a family looking for a tutor, or a high school student who wants to tutor.</p>
       </div>
     </section>
 
-    <section class="section" style="padding-top:0;padding-bottom:0;">
-      <div class="container">
-        <figure class="site-photo signup-banner">
-          <img src="images/tutoring-session.png" alt="Student focused on homework at a desk">
-          <figcaption class="photo-caption">Join PeerScholars as a parent, guardian, or high school tutor</figcaption>
-        </figure>
-      </div>
-    </section>
-
-    <section class="section" style="padding-top:1rem;">
+    <section class="section" style="padding-top:0;">
       <div class="container form-page form-page-wide">
         <div class="form-card" id="role-picker-card">
           <p class="form-divider" style="margin-top:0;">Who are you signing up as?</p>
           <div class="signup-role-picker">
             <button type="button" class="signup-role-btn" data-role="family">
               <span class="role-icon" aria-hidden="true">👨‍👩‍👧</span>
-              <span>Student / Family</span>
-              <span class="role-desc">Parent or guardian looking for a tutor</span>
+              <span>Parent / Family</span>
+              <span class="role-desc">Find a verified tutor — $12.99/hour</span>
             </button>
             <button type="button" class="signup-role-btn" data-role="tutor">
               <span class="role-icon" aria-hidden="true">🎓</span>
               <span>Tutor</span>
-              <span class="role-desc">High school student who wants to teach</span>
+              <span class="role-desc">High school student — earn $9/hour</span>
             </button>
           </div>
         </div>
@@ -65,186 +57,150 @@
         <form class="form-card" id="signup-form" hidden>
           <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
           <input type="hidden" name="role" id="role-input" value="">
-
           <button type="button" class="signup-back" id="signup-back">← Choose a different sign-up type</button>
 
-          <!-- Family / Student form -->
+          <!-- Parent / Family -->
           <div id="family-fields" hidden>
-            <p class="form-divider" style="margin-top:0;">Parent / guardian info</p>
-
+            <p class="form-divider" style="margin-top:0;">Account &amp; parent info</p>
             <div class="form-row half">
-              <div class="form-row" style="margin-bottom:0;">
-                <label for="parent-first-name">Parent first name *</label>
-                <input type="text" id="parent-first-name" name="parent-first-name" placeholder="Jane">
-              </div>
-              <div class="form-row" style="margin-bottom:0;">
-                <label for="parent-last-name">Parent last name *</label>
-                <input type="text" id="parent-last-name" name="parent-last-name" placeholder="Smith">
-              </div>
+              <div class="form-row" style="margin:0"><label for="parent-first-name">First name *</label><input id="parent-first-name" name="parent-first-name" required></div>
+              <div class="form-row" style="margin:0"><label for="parent-last-name">Last name *</label><input id="parent-last-name" name="parent-last-name" required></div>
             </div>
-
-            <div class="form-row">
-              <label for="family-phone">Phone number * <span style="font-weight:600;color:var(--text-light);">(we'll call you)</span></label>
-              <input type="tel" id="family-phone" name="phone" placeholder="(555) 123-4567">
-            </div>
-
-            <div class="form-row">
-              <label for="family-email">Email address *</label>
-              <input type="email" id="family-email" name="email" placeholder="you@email.com">
-            </div>
-
-            <div class="form-divider">Student info</div>
-
             <div class="form-row half">
-              <div class="form-row" style="margin-bottom:0;">
-                <label for="child-first-name">Child first name *</label>
-                <input type="text" id="child-first-name" name="child-first-name" placeholder="Emma">
-              </div>
-              <div class="form-row" style="margin-bottom:0;">
-                <label for="child-last-name">Child last name *</label>
-                <input type="text" id="child-last-name" name="child-last-name" placeholder="Smith">
-              </div>
+              <div class="form-row" style="margin:0"><label for="family-email">Email *</label><input type="email" id="family-email" name="email" required></div>
+              <div class="form-row" style="margin:0"><label for="family-password">Password *</label><input type="password" id="family-password" name="password" minlength="6" required></div>
             </div>
-
-            <div class="form-row">
-              <label for="subjects-needed">Subject(s) of help *</label>
-              <input type="text" id="subjects-needed" name="subjects-needed" placeholder="Math, Reading, Science...">
-            </div>
-
-            <div class="form-row">
-              <label for="interests">Interests &amp; hobbies *</label>
-              <input type="text" id="interests" name="interests" placeholder="Soccer, art, Minecraft, baking...">
-            </div>
-
-            <div class="form-row">
-              <label>What days can we reach you? * <span style="font-weight:600;color:var(--text-light);">(select all that apply)</span></label>
-              <div class="checkbox-grid" data-day-group="family">
-                <label><input type="checkbox" name="reach-days" value="Monday"> Monday</label>
-                <label><input type="checkbox" name="reach-days" value="Tuesday"> Tuesday</label>
-                <label><input type="checkbox" name="reach-days" value="Wednesday"> Wednesday</label>
-                <label><input type="checkbox" name="reach-days" value="Thursday"> Thursday</label>
-                <label><input type="checkbox" name="reach-days" value="Friday"> Friday</label>
-                <label><input type="checkbox" name="reach-days" value="Saturday"> Saturday</label>
-                <label><input type="checkbox" name="reach-days" value="Sunday"> Sunday</label>
+            <div class="form-row half">
+              <div class="form-row" style="margin:0"><label for="family-phone">Phone *</label><input type="tel" id="family-phone" name="phone" required></div>
+              <div class="form-row" style="margin:0"><label for="relationship">Relationship to child *</label>
+                <select id="relationship" name="relationship" required><option value="">Select</option><option>Parent</option><option>Guardian</option><option>Other caregiver</option></select>
               </div>
             </div>
+            <div class="form-row half">
+              <div class="form-row" style="margin:0"><label for="city">City *</label><input id="city" name="city" required></div>
+              <div class="form-row" style="margin:0"><label for="state">State *</label><input id="state" name="state" maxlength="2" placeholder="WA" required></div>
+            </div>
+
+            <p class="form-divider">K–8 student info</p>
+            <div class="form-row half">
+              <div class="form-row" style="margin:0"><label for="child-first-name">First / preferred name *</label><input id="child-first-name" name="child-first-name" required></div>
+              <div class="form-row" style="margin:0"><label for="child-grade">Grade *</label>
+                <select id="child-grade" name="child-grade" required><option value="">Select</option><option>K</option><option>1st</option><option>2nd</option><option>3rd</option><option>4th</option><option>5th</option><option>6th</option><option>7th</option><option>8th</option></select>
+              </div>
+            </div>
+            <div class="form-row"><label for="child-school">School name (optional)</label><input id="child-school" name="child-school"></div>
+            <div class="form-row"><label for="subjects-needed">Subjects needing help *</label><input id="subjects-needed" name="subjects-needed" placeholder="Math, Reading..." required></div>
+            <div class="form-row"><label for="topics-needed">Specific topics</label><input id="topics-needed" name="topics-needed" placeholder="Fractions, reading comprehension..."></div>
+            <div class="form-row"><label for="interests">Interests &amp; hobbies *</label><input id="interests" name="interests" required placeholder="Soccer, art, Minecraft..."></div>
+            <div class="form-row"><label for="learning-prefs">Learning preferences</label><input id="learning-prefs" name="learning-prefs" placeholder="Visual learner, needs breaks..."></div>
+            <div class="form-row"><label for="tutoring-notes">Notes for tutors</label><textarea id="tutoring-notes" name="tutoring-notes" rows="2"></textarea></div>
+            <div class="form-row"><label for="session-mode">Online or in-person *</label>
+              <select id="session-mode" name="session-mode" required><option value="">Select</option><option>Online</option><option>In-person</option><option>Both</option></select>
+            </div>
+            <div class="form-row"><label>Availability *</label>
+              <div class="checkbox-grid">
+                <label><input type="checkbox" name="availability-days" value="Mon"> Mon</label>
+                <label><input type="checkbox" name="availability-days" value="Tue"> Tue</label>
+                <label><input type="checkbox" name="availability-days" value="Wed"> Wed</label>
+                <label><input type="checkbox" name="availability-days" value="Thu"> Thu</label>
+                <label><input type="checkbox" name="availability-days" value="Fri"> Fri</label>
+                <label><input type="checkbox" name="availability-days" value="Sat"> Sat</label>
+                <label><input type="checkbox" name="availability-days" value="Sun"> Sun</label>
+              </div>
+            </div>
+            <div class="form-row"><label for="availability-notes">Availability details</label><input id="availability-notes" name="availability-notes" placeholder="After 4pm weekdays..."></div>
+            <label style="display:flex;gap:0.5rem;font-size:0.875rem;margin:1rem 0;"><input type="checkbox" id="parent-consent" required> I consent to PeerScholars collecting this information for matching, scheduling, and safety. I understand tutoring is $12.99/hour.</label>
           </div>
 
-          <!-- Tutor form -->
+          <!-- Tutor -->
           <div id="tutor-fields" hidden>
-            <div class="signup-tutor-layout">
-              <div class="signup-tutor-main">
-                <p class="form-divider" style="margin-top:0;">Tutor info</p>
-
-                <div class="form-row half">
-                  <div class="form-row" style="margin-bottom:0;">
-                    <label for="tutor-first-name">First name *</label>
-                    <input type="text" id="tutor-first-name" name="tutor-first-name" placeholder="Alex">
-                  </div>
-                  <div class="form-row" style="margin-bottom:0;">
-                    <label for="tutor-last-name">Last name *</label>
-                    <input type="text" id="tutor-last-name" name="tutor-last-name" placeholder="Johnson">
-                  </div>
-                </div>
-
-                <div class="form-row">
-                  <label for="school-email">Bellevue School District student email *</label>
-                  <input type="email" id="school-email" name="school-email" placeholder="firstname.lastname@bsd405.org" autocomplete="email">
-                  <p class="field-hint">Use your official BSD student Outlook email (ends in @bsd405.org).</p>
-                </div>
-
-                <div class="form-row">
-                  <button type="button" class="btn btn-secondary btn-full" id="send-code-btn">Send 5-digit verification code</button>
-                  <p class="field-hint" id="code-sent-note" hidden>Code sent! Check your BSD Outlook inbox and Junk Email folder — it can take up to a minute.</p>
-                </div>
-
-                <div class="form-row">
-                  <label for="tutor-phone">Phone number *</label>
-                  <input type="tel" id="tutor-phone" name="phone" placeholder="(555) 123-4567">
-                </div>
-
-                <div class="form-row half">
-                  <div class="form-row" style="margin-bottom:0;">
-                    <label for="school">School *</label>
-                    <input type="text" id="school" name="school" placeholder="Bellevue High School">
-                  </div>
-                  <div class="form-row" style="margin-bottom:0;">
-                    <label for="age">Age *</label>
-                    <input type="number" id="age" name="age" placeholder="16" min="14" max="19">
-                  </div>
-                </div>
-
-                <div class="form-row">
-                  <label for="tutor-grade">What grade are you in? *</label>
-                  <select id="tutor-grade" name="tutor-grade">
-                    <option value="">Select grade</option>
-                    <option>9th</option><option>10th</option><option>11th</option><option>12th</option>
-                  </select>
-                </div>
-
-                <div class="form-row">
-                  <label for="subjects-teach">What subject(s) can you teach? *</label>
-                  <input type="text" id="subjects-teach" name="subjects-teach" placeholder="Math, English, Science...">
-                </div>
-
-                <div class="form-row">
-                  <label>What grade levels can you teach? * <span style="font-weight:600;color:var(--text-light);">(select all that apply)</span></label>
-                  <div class="checkbox-grid" data-grade-group="tutor">
-                    <label><input type="checkbox" name="grades-can-teach" value="K"> K</label>
-                    <label><input type="checkbox" name="grades-can-teach" value="1st"> 1st</label>
-                    <label><input type="checkbox" name="grades-can-teach" value="2nd"> 2nd</label>
-                    <label><input type="checkbox" name="grades-can-teach" value="3rd"> 3rd</label>
-                    <label><input type="checkbox" name="grades-can-teach" value="4th"> 4th</label>
-                    <label><input type="checkbox" name="grades-can-teach" value="5th"> 5th</label>
-                    <label><input type="checkbox" name="grades-can-teach" value="6th"> 6th</label>
-                    <label><input type="checkbox" name="grades-can-teach" value="7th"> 7th</label>
-                    <label><input type="checkbox" name="grades-can-teach" value="8th"> 8th</label>
-                  </div>
-                </div>
-
-                <div class="form-row half">
-                  <div class="form-row" style="margin-bottom:0;">
-                    <label for="days-per-week">How many days can you teach per week? *</label>
-                    <input type="number" id="days-per-week" name="days-per-week" min="1" max="7" placeholder="3">
-                  </div>
-                  <div class="form-row" style="margin-bottom:0;">
-                    <label for="kids-per-week">How many kids can you teach per week? *</label>
-                    <input type="number" id="kids-per-week" name="kids-per-week" min="1" max="20" placeholder="2">
-                  </div>
-                </div>
-              </div>
-
-              <aside class="tutor-verify-panel" aria-live="polite">
-                <h3>Confirmation code</h3>
-                <p class="tutor-verify-desc">After you click “Send verification code,” enter the 5-digit number from your BSD Outlook inbox here.</p>
-                <div class="form-row" style="margin-bottom:0.75rem;">
-                  <label for="confirmation-code">Your code</label>
-                  <input type="text" id="confirmation-code" inputmode="numeric" maxlength="5" pattern="[0-9]{5}" placeholder="12345" autocomplete="one-time-code">
-                </div>
-                <button type="button" class="btn btn-primary btn-full" id="verify-code-btn">Verify code</button>
-                <p class="verify-success" id="verify-success" hidden>Welcome! Your school email is verified.</p>
-                <p class="verify-error" id="verify-error" hidden>Sorry, that code is wrong. Please try again.</p>
-                <p class="field-hint">Codes expire after 15 minutes. You must verify before submitting.</p>
-              </aside>
+            <p class="form-divider" style="margin-top:0;">Account info</p>
+            <div class="form-row half">
+              <div class="form-row" style="margin:0"><label for="tutor-first-name">First name *</label><input id="tutor-first-name" name="tutor-first-name" required></div>
+              <div class="form-row" style="margin:0"><label for="tutor-last-name">Last name *</label><input id="tutor-last-name" name="tutor-last-name" required></div>
             </div>
+            <div class="form-row half">
+              <div class="form-row" style="margin:0"><label for="tutor-email">Your email *</label><input type="email" id="tutor-email" name="tutor-email" required></div>
+              <div class="form-row" style="margin:0"><label for="tutor-password">Password *</label><input type="password" id="tutor-password" name="tutor-password" minlength="6" required></div>
+            </div>
+            <div class="form-row half">
+              <div class="form-row" style="margin:0"><label for="age">Age *</label><input type="number" id="age" name="age" min="14" max="19" required></div>
+              <div class="form-row" style="margin:0"><label for="tutor-grade">Grade *</label>
+                <select id="tutor-grade" name="tutor-grade" required><option value="">Select</option><option>9th</option><option>10th</option><option>11th</option><option>12th</option></select>
+              </div>
+            </div>
+            <div class="form-row"><label for="school">High school *</label><input id="school" name="school" required></div>
+            <div class="form-row half">
+              <div class="form-row" style="margin:0"><label for="tutor-city">City *</label><input id="tutor-city" name="city" required></div>
+              <div class="form-row" style="margin:0"><label for="tutor-state">State *</label><input id="tutor-state" name="state" maxlength="2" required placeholder="WA"></div>
+            </div>
+
+            <p class="form-divider">Parent / guardian (required for minors)</p>
+            <div class="form-row half">
+              <div class="form-row" style="margin:0"><label for="parent-guardian-name">Parent/guardian name *</label><input id="parent-guardian-name" name="parent-guardian-name" required></div>
+              <div class="form-row" style="margin:0"><label for="parent-guardian-email">Parent/guardian email *</label><input type="email" id="parent-guardian-email" name="parent-guardian-email" required></div>
+            </div>
+
+            <p class="form-divider">Tutoring info</p>
+            <div class="form-row"><label for="subjects-teach">Subjects you can tutor *</label><input id="subjects-teach" name="subjects-teach" required></div>
+            <div class="form-row"><label>Grades you can tutor *</label>
+              <div class="checkbox-grid">
+                <label><input type="checkbox" name="grades-can-teach" value="K"> K</label>
+                <label><input type="checkbox" name="grades-can-teach" value="1st"> 1st</label>
+                <label><input type="checkbox" name="grades-can-teach" value="2nd"> 2nd</label>
+                <label><input type="checkbox" name="grades-can-teach" value="3rd"> 3rd</label>
+                <label><input type="checkbox" name="grades-can-teach" value="4th"> 4th</label>
+                <label><input type="checkbox" name="grades-can-teach" value="5th"> 5th</label>
+                <label><input type="checkbox" name="grades-can-teach" value="6th"> 6th</label>
+                <label><input type="checkbox" name="grades-can-teach" value="7th"> 7th</label>
+                <label><input type="checkbox" name="grades-can-teach" value="8th"> 8th</label>
+              </div>
+            </div>
+            <div class="form-row"><label for="tutor-session-mode">Online or in-person *</label>
+              <select id="tutor-session-mode" name="session-mode" required><option value="">Select</option><option>Online</option><option>In-person</option><option>Both</option></select>
+            </div>
+            <div class="form-row"><label>Availability *</label>
+              <div class="checkbox-grid">
+                <label><input type="checkbox" name="tutor-availability-days" value="Mon"> Mon</label>
+                <label><input type="checkbox" name="tutor-availability-days" value="Tue"> Tue</label>
+                <label><input type="checkbox" name="tutor-availability-days" value="Wed"> Wed</label>
+                <label><input type="checkbox" name="tutor-availability-days" value="Thu"> Thu</label>
+                <label><input type="checkbox" name="tutor-availability-days" value="Fri"> Fri</label>
+                <label><input type="checkbox" name="tutor-availability-days" value="Sat"> Sat</label>
+                <label><input type="checkbox" name="tutor-availability-days" value="Sun"> Sun</label>
+              </div>
+            </div>
+            <div class="form-row"><label for="availability-details">Availability details</label><input id="availability-details" name="availability-details"></div>
+            <div class="form-row"><label for="bio">Short bio *</label><textarea id="bio" name="bio" rows="2" required></textarea></div>
+            <div class="form-row"><label for="tutor-interests">Interests *</label><input id="tutor-interests" name="interests" required></div>
+            <div class="form-row"><label for="why-tutor">Why do you want to tutor? *</label><textarea id="why-tutor" name="why-tutor" rows="2" required></textarea></div>
+            <div class="form-row"><label for="experience">Previous tutoring/teaching experience</label><textarea id="experience" name="experience" rows="2"></textarea></div>
+
+            <p class="form-divider">School enrollment verification</p>
+            <div class="form-row">
+              <label for="school-doc">Upload school-issued document *</label>
+              <input type="file" id="school-doc" name="school-doc" accept=".pdf,.jpg,.jpeg,.png" required>
+              <p class="field-hint">Upload ONE document showing your name and current school enrollment (student ID, schedule, report card, etc.). You may cover information PeerScholars does not need. Admin-only — never shown to parents.</p>
+            </div>
+
+            <label style="display:flex;gap:0.5rem;font-size:0.875rem;margin:0.75rem 0;"><input type="checkbox" id="tutor-parent-consent" required> I confirm my parent/guardian has approved this application.</label>
+            <label style="display:flex;gap:0.5rem;font-size:0.875rem;margin:0.75rem 0;"><input type="checkbox" id="code-of-conduct-read" required> I have read the <a href="index.html#code-of-conduct">Tutor Code of Conduct</a>.</label>
           </div>
 
-          <button type="submit" class="btn btn-primary btn-full" id="signup-submit">Submit — Start Now</button>
+          <button type="submit" class="btn btn-primary btn-full" id="signup-submit">Submit</button>
         </form>
       </div>
     </section>
   </main>
 
   <footer class="site-footer">
-    <div class="container footer-grid">
-      <div class="footer-brand"><a href="index.html" class="logo"><span class="logo-icon">PS</span>PeerScholars</a></div>
-      <div class="footer-links"><h4>Explore</h4><a href="demo.html">App Demo</a><a href="mission.html">Our Cause</a></div>
-      <div class="footer-links"><h4>Families</h4><a href="pricing.html">Pricing</a></div>
-      <div class="footer-links"><h4>Tutors</h4><a href="for-tutors.html">Become a Tutor</a></div>
-    </div>
-    <div class="container footer-bottom"><p>&copy; 2026 PeerScholars.</p></div>
+    <div class="container footer-bottom"><p>&copy; 2026 PeerScholars · <a href="report-concern.html">Report a Concern</a></p></div>
   </footer>
-  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/matching.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/auth.js"></script>
   <script src="js/main.js"></script>
   <script src="js/signup.js"></script>
 </body>

@@ -1,0 +1,39 @@
+/** PeerScholars app configuration */
+window.PS_CONFIG = {
+  PARENT_RATE: 12.99,
+  TUTOR_RATE: 9.0,
+  PLATFORM_RATE: 3.99,
+  SUPPORT_EMAIL: 'support@peerscholars.com',
+  SIGNUP_EMAIL: 'support@peerscholars.com',
+  APPROVED_IN_PERSON_LOCATIONS: [
+    'Public library',
+    'Community center',
+    'School campus (approved area)',
+    'Other approved public location',
+  ],
+  VERIFICATION_STAGES: [
+    'Application Submitted',
+    'Parent/Guardian Verification',
+    'School Enrollment Verification',
+    'PeerScholars Interview',
+    'Final Admin Review',
+    'Verified',
+  ],
+  SCHOOL_DOC_STATUSES: [
+    'Not submitted',
+    'Submitted',
+    'Under review',
+    'Approved',
+    'Rejected',
+    'Needs another document',
+  ],
+  SESSION_STATUSES: [
+    'Scheduled',
+    'Started',
+    'Completed',
+    'Cancelled',
+    'Tutor no-show',
+    'Student no-show',
+  ],
+  REPORT_STATUSES: ['New', 'Reviewing', 'Resolved'],
+};
