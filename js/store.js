@@ -126,7 +126,6 @@
           userId: tutorId,
           firstName: 'Jordan',
           lastName: 'Lee',
-          age: 16,
           grade: '11th',
           school: 'Bellevue High School',
           city: 'Bellevue',

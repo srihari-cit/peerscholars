@@ -31,13 +31,13 @@
   <main>
     <section class="page-hero center compact">
       <div class="container">
-        <p class="eyebrow">Get Started</p>
-        <h1>Create your PeerScholars account</h1>
+        <p class="eyebrow">Quick sign-up · about 1 minute</p>
+        <h1>Get started with PeerScholars</h1>
         <p id="signup-intro">Choose whether you're a family looking for a tutor, or a high school student who wants to tutor.</p>
       </div>
     </section>
 
-    <section class="section" style="padding-top:0;">
+    <section class="section signup-section">
       <div class="container form-page form-page-wide">
         <div class="form-card" id="role-picker-card">
           <p class="form-divider" style="margin-top:0;">Who are you signing up as?</p>
@@ -45,7 +45,7 @@
             <button type="button" class="signup-role-btn" data-role="family">
               <span class="role-icon" aria-hidden="true">👨‍👩‍👧</span>
               <span>Parent / Family</span>
-              <span class="role-desc">Find a verified tutor — $12.99/hour</span>
+              <span class="role-desc">Find a tutor — $12.99/hour online</span>
             </button>
             <button type="button" class="signup-role-btn" data-role="tutor">
               <span class="role-icon" aria-hidden="true">🎓</span>
@@ -55,152 +55,119 @@
           </div>
         </div>
 
-        <form class="form-card" id="signup-form" hidden>
+        <form class="form-card signup-fast-form" id="signup-form" hidden>
           <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
           <input type="hidden" name="role" id="role-input" value="">
-          <button type="button" class="signup-back" id="signup-back">← Choose a different sign-up type</button>
+          <input type="hidden" name="session-mode" value="Online">
+          <button type="button" class="signup-back" id="signup-back">← Back</button>
+          <p class="signup-fast-note" id="signup-fast-note">Only the essentials — we'll follow up with anything else.</p>
 
           <!-- Parent / Family -->
           <div id="family-fields" hidden>
-            <p class="form-divider" style="margin-top:0;">Account &amp; parent info</p>
+            <p class="form-divider" style="margin-top:0;">Your account</p>
             <div class="form-row half">
-              <div class="form-row" style="margin:0"><label for="parent-first-name">First name *</label><input id="parent-first-name" name="parent-first-name" required></div>
-              <div class="form-row" style="margin:0"><label for="parent-last-name">Last name *</label><input id="parent-last-name" name="parent-last-name" required></div>
+              <div class="form-row" style="margin:0"><label for="parent-first-name">Your first name *</label><input id="parent-first-name" name="parent-first-name" autocomplete="given-name" required></div>
+              <div class="form-row" style="margin:0"><label for="family-email">Email *</label><input type="email" id="family-email" name="email" autocomplete="email" required></div>
             </div>
             <div class="form-row half">
-              <div class="form-row" style="margin:0"><label for="family-email">Email *</label><input type="email" id="family-email" name="email" required></div>
-              <div class="form-row" style="margin:0"><label for="family-password">Password *</label><input type="password" id="family-password" name="password" minlength="6" required></div>
+              <div class="form-row" style="margin:0"><label for="family-password">Password *</label><input type="password" id="family-password" name="password" minlength="6" autocomplete="new-password" required placeholder="6+ characters"></div>
+              <div class="form-row" style="margin:0"><label for="family-phone">Phone *</label><input type="tel" id="family-phone" name="phone" autocomplete="tel" required></div>
             </div>
-            <div class="form-row half">
-              <div class="form-row" style="margin:0"><label for="family-phone">Phone *</label><input type="tel" id="family-phone" name="phone" required></div>
-              <div class="form-row" style="margin:0"><label for="relationship">Relationship to child *</label>
-                <select id="relationship" name="relationship" required><option value="">Select</option><option>Parent</option><option>Guardian</option><option>Other caregiver</option></select>
-              </div>
-            </div>
-            <div class="form-row half">
-              <div class="form-row" style="margin:0"><label for="city">City *</label><input id="city" name="city" required></div>
-              <div class="form-row" style="margin:0"><label for="state">State *</label><input id="state" name="state" maxlength="2" placeholder="WA" required></div>
-            </div>
+            <div class="form-row"><label for="city">City *</label><input id="city" name="city" autocomplete="address-level2" required placeholder="e.g. Bellevue"></div>
 
-            <p class="form-divider">K–8 student info</p>
+            <p class="form-divider">Your child</p>
             <div class="form-row half">
-              <div class="form-row" style="margin:0"><label for="child-first-name">First / preferred name *</label><input id="child-first-name" name="child-first-name" required></div>
+              <div class="form-row" style="margin:0"><label for="child-first-name">Child's first name *</label><input id="child-first-name" name="child-first-name" required></div>
               <div class="form-row" style="margin:0"><label for="child-grade">Grade *</label>
                 <select id="child-grade" name="child-grade" required><option value="">Select</option><option>K</option><option>1st</option><option>2nd</option><option>3rd</option><option>4th</option><option>5th</option><option>6th</option><option>7th</option><option>8th</option></select>
               </div>
             </div>
-            <div class="form-row"><label for="child-school">School name (optional)</label><input id="child-school" name="child-school"></div>
-            <div class="form-row"><label for="subjects-needed">Subjects needing help *</label><input id="subjects-needed" name="subjects-needed" placeholder="Math, Reading..." required></div>
-            <div class="form-row"><label for="topics-needed">Specific topics</label><input id="topics-needed" name="topics-needed" placeholder="Fractions, reading comprehension..."></div>
+
             <div class="form-row">
-              <label>Interests &amp; hobbies * <span class="field-hint" style="font-weight:600;">(select all that apply)</span></label>
-              <div id="family-interests-grid"></div>
+              <label>Subjects needed * <span class="field-hint">(check all that apply)</span></label>
+              <div id="family-subjects-grid"></div>
             </div>
-            <div class="form-row"><label for="learning-prefs">Learning preferences</label><input id="learning-prefs" name="learning-prefs" placeholder="Visual learner, needs breaks..."></div>
-            <div class="form-row"><label for="tutoring-notes">Notes for tutors</label><textarea id="tutoring-notes" name="tutoring-notes" rows="2"></textarea></div>
-            <input type="hidden" name="session-mode" value="Online">
-            <div class="alert alert-info" style="margin:0.75rem 0;">All PeerScholars tutoring sessions are <strong>online via Google Meet</strong> — $12.99/hour.</div>
-            <div class="form-row">
-              <label>When is your child available? * <span class="field-hint" style="font-weight:600;">(pick days, then times)</span></label>
+
+            <div class="form-row signup-avail-block">
+              <label>When is your child free? *</label>
+              <p class="field-hint availability-instruction">Check a day, set times (e.g. 1:00–3:00 PM). Tap <strong>+ Add time</strong> for another slot that day.</p>
               <div id="family-availability"></div>
             </div>
-            <label style="display:flex;gap:0.5rem;font-size:0.875rem;margin:1rem 0;"><input type="checkbox" id="parent-consent" required> I consent to PeerScholars collecting this information for matching, scheduling, and safety. I understand tutoring is $12.99/hour and sessions are held online via Google Meet.</label>
+
+            <label class="signup-consent"><input type="checkbox" id="parent-consent" required> I agree to online tutoring via Google Meet at $12.99/hour. PeerScholars may contact me about matching and scheduling.</label>
           </div>
 
           <!-- Tutor -->
           <div id="tutor-fields" hidden>
-            <p class="form-divider" style="margin-top:0;">Account info</p>
+            <p class="form-divider" style="margin-top:0;">Your account</p>
             <div class="form-row half">
-              <div class="form-row" style="margin:0"><label for="tutor-first-name">First name *</label><input id="tutor-first-name" name="tutor-first-name" required></div>
-              <div class="form-row" style="margin:0"><label for="tutor-last-name">Last name *</label><input id="tutor-last-name" name="tutor-last-name" required></div>
+              <div class="form-row" style="margin:0"><label for="tutor-first-name">First name *</label><input id="tutor-first-name" name="tutor-first-name" autocomplete="given-name" required></div>
+              <div class="form-row" style="margin:0"><label for="tutor-last-name">Last name *</label><input id="tutor-last-name" name="tutor-last-name" autocomplete="family-name" required></div>
             </div>
             <div class="form-row half">
-              <div class="form-row" style="margin:0"><label for="tutor-email">Your email *</label><input type="email" id="tutor-email" name="tutor-email" required></div>
-              <div class="form-row" style="margin:0"><label for="tutor-password">Password *</label><input type="password" id="tutor-password" name="tutor-password" minlength="6" required></div>
+              <div class="form-row" style="margin:0"><label for="tutor-email">Email *</label><input type="email" id="tutor-email" name="tutor-email" autocomplete="email" required></div>
+              <div class="form-row" style="margin:0"><label for="tutor-password">Password *</label><input type="password" id="tutor-password" name="tutor-password" minlength="6" autocomplete="new-password" required placeholder="6+ characters"></div>
             </div>
             <div class="form-row half">
-              <div class="form-row" style="margin:0"><label for="age">Age *</label><input type="number" id="age" name="age" min="14" max="19" required></div>
-              <div class="form-row" style="margin:0"><label for="tutor-grade">Grade *</label>
+              <div class="form-row" style="margin:0"><label for="tutor-grade">Your grade *</label>
                 <select id="tutor-grade" name="tutor-grade" required><option value="">Select</option><option>9th</option><option>10th</option><option>11th</option><option>12th</option></select>
               </div>
+              <div class="form-row" style="margin:0"><label for="school">High school *</label><input id="school" name="school" required></div>
             </div>
-            <div class="form-row"><label for="school">High school *</label><input id="school" name="school" required></div>
-            <div class="form-row half">
-              <div class="form-row" style="margin:0"><label for="tutor-city">City *</label><input id="tutor-city" name="city" required></div>
-              <div class="form-row" style="margin:0"><label for="tutor-state">State *</label><input id="tutor-state" name="state" maxlength="2" required placeholder="WA"></div>
+            <div class="form-row"><label for="tutor-city">City *</label><input id="tutor-city" name="city" autocomplete="address-level2" required placeholder="e.g. Bellevue"></div>
+
+            <div class="form-row">
+              <label for="parent-guardian-email">Parent/guardian email *</label>
+              <input type="email" id="parent-guardian-email" name="parent-guardian-email" required placeholder="We'll email them to confirm">
             </div>
 
-            <p class="form-divider">Parent / guardian information</p>
-            <p class="field-hint" style="margin-bottom:0.75rem;">We'll email your parent or guardian to confirm your application. You won't be fully verified until they approve.</p>
-            <div class="form-row half">
-              <div class="form-row" style="margin:0"><label for="parent-first-name">Parent/guardian first name *</label><input id="parent-first-name" name="parent-first-name" required></div>
-              <div class="form-row" style="margin:0"><label for="parent-last-name">Parent/guardian last name *</label><input id="parent-last-name" name="parent-last-name" required></div>
+            <p class="form-divider">What you can tutor</p>
+            <div class="form-row">
+              <label>Subjects * <span class="field-hint">(check all that apply)</span></label>
+              <div id="tutor-subjects-grid"></div>
             </div>
-            <div class="form-row half">
-              <div class="form-row" style="margin:0"><label for="parent-guardian-email">Parent/guardian email *</label><input type="email" id="parent-guardian-email" name="parent-guardian-email" required></div>
-              <div class="form-row" style="margin:0"><label for="parent-guardian-phone">Parent/guardian phone *</label><input type="tel" id="parent-guardian-phone" name="parent-guardian-phone" required></div>
-            </div>
-
-            <p class="form-divider">Tutoring info</p>
-            <div class="form-row"><label for="subjects-teach">Subjects you can tutor *</label><input id="subjects-teach" name="subjects-teach" required></div>
-            <div class="form-row"><label>Grades you can tutor *</label>
-              <div class="checkbox-grid">
+            <div class="form-row">
+              <label>Grades you can tutor *</label>
+              <label class="grades-select-all"><input type="checkbox" id="grades-select-all"> Select all grades</label>
+              <div class="checkbox-grid grades-checkbox-grid" id="grades-grid">
                 <label><input type="checkbox" name="grades-can-teach" value="K"> K</label>
-                <label><input type="checkbox" name="grades-can-teach" value="1st"> 1st</label>
-                <label><input type="checkbox" name="grades-can-teach" value="2nd"> 2nd</label>
-                <label><input type="checkbox" name="grades-can-teach" value="3rd"> 3rd</label>
-                <label><input type="checkbox" name="grades-can-teach" value="4th"> 4th</label>
-                <label><input type="checkbox" name="grades-can-teach" value="5th"> 5th</label>
-                <label><input type="checkbox" name="grades-can-teach" value="6th"> 6th</label>
-                <label><input type="checkbox" name="grades-can-teach" value="7th"> 7th</label>
-                <label><input type="checkbox" name="grades-can-teach" value="8th"> 8th</label>
+                <label><input type="checkbox" name="grades-can-teach" value="1st"> 1</label>
+                <label><input type="checkbox" name="grades-can-teach" value="2nd"> 2</label>
+                <label><input type="checkbox" name="grades-can-teach" value="3rd"> 3</label>
+                <label><input type="checkbox" name="grades-can-teach" value="4th"> 4</label>
+                <label><input type="checkbox" name="grades-can-teach" value="5th"> 5</label>
+                <label><input type="checkbox" name="grades-can-teach" value="6th"> 6</label>
+                <label><input type="checkbox" name="grades-can-teach" value="7th"> 7</label>
+                <label><input type="checkbox" name="grades-can-teach" value="8th"> 8</label>
+                <label><input type="checkbox" name="grades-can-teach" value="9th"> 9</label>
+                <label><input type="checkbox" name="grades-can-teach" value="10th"> 10</label>
+                <label><input type="checkbox" name="grades-can-teach" value="11th"> 11</label>
+                <label><input type="checkbox" name="grades-can-teach" value="12th"> 12</label>
               </div>
             </div>
-            <input type="hidden" name="session-mode" value="Online">
-            <div class="form-row"><label for="weekly-capacity">How many students can you tutor per week? *</label>
-              <select id="weekly-capacity" name="weekly-capacity" required>
-                <option value="">Select</option>
-                <option value="1">1 student</option>
-                <option value="2">2 students</option>
-                <option value="3">3 students</option>
-                <option value="4">4 students</option>
-                <option value="5">5 students</option>
-                <option value="6">6+ students</option>
-              </select>
-            </div>
-            <div class="form-row">
-              <label>When are you available to tutor? *</label>
+
+            <div class="form-row signup-avail-block">
+              <label>When can you tutor? *</label>
+              <p class="field-hint availability-instruction">Check a day, set times (e.g. 1:00–3:00 PM). Tap <strong>+ Add time</strong> for another slot that day.</p>
               <div id="tutor-availability"></div>
             </div>
-            <div class="alert alert-info" style="margin:0.75rem 0;">PeerScholars tutoring is <strong>online only via Google Meet</strong>.</div>
-            <div class="form-row"><label for="bio">Short bio *</label><textarea id="bio" name="bio" rows="2" required></textarea></div>
-            <div class="form-row">
-              <label>My interests *</label>
-              <div id="tutor-interests-grid"></div>
-            </div>
-            <div class="form-row"><label for="why-tutor">Why do you want to tutor? *</label><textarea id="why-tutor" name="why-tutor" rows="2" required></textarea></div>
-            <div class="form-row"><label for="experience">Previous tutoring/teaching experience</label><textarea id="experience" name="experience" rows="2"></textarea></div>
 
-            <p class="form-divider">Identity verification</p>
-            <p class="field-hint" style="margin-bottom:0.75rem;">These materials are private and only visible to PeerScholars administrators — never on your public profile.</p>
-
-            <div class="form-row">
-              <label for="school-id">A. School ID *</label>
-              <input type="file" id="school-id" name="school-id" accept=".jpg,.jpeg,.png,.pdf" required>
-              <p class="field-hint">Please upload a clear photo of your current school ID. For your privacy, you may cover any information that PeerScholars does not need to verify your enrollment, such as student ID numbers, barcodes, or other sensitive details. Your school name, your name, and your photo should remain visible.</p>
-            </div>
-
-            <div class="form-row">
-              <label for="tutor-photo">B. Your photo *</label>
-              <input type="file" id="tutor-photo" name="tutor-photo" accept=".jpg,.jpeg,.png" required>
-              <p class="field-hint">Please upload a clear, recent photo of yourself so we can confirm that the person applying matches the student shown on the school ID. This photo is used only for verification and will not automatically become your public profile photo.</p>
-            </div>
-
-            <label style="display:flex;gap:0.5rem;font-size:0.875rem;margin:0.75rem 0;"><input type="checkbox" id="code-of-conduct-read" required> I have read the <a href="index.html#code-of-conduct">Tutor Code of Conduct</a>.</label>
+            <input type="hidden" name="weekly-capacity" value="3">
+            <label class="signup-consent"><input type="checkbox" id="tutor-consent" required> I agree to tutor online via Google Meet and follow the <a href="index.html#code-of-conduct">Tutor Code of Conduct</a>. PeerScholars will follow up about verification.</label>
           </div>
 
           <button type="submit" class="btn btn-primary btn-full" id="signup-submit">Submit</button>
         </form>
+
+        <div class="signup-success-overlay" id="signup-success" hidden>
+          <div class="signup-success-card">
+            <div class="signup-success-icon" aria-hidden="true">✓</div>
+            <h2>Thank you!</h2>
+            <p>We will get back to you soon. Our PeerScholars team will review your information and reach out with next steps.</p>
+            <a href="index.html" class="btn btn-primary">Return to Home</a>
+            <p class="field-hint signup-success-redirect">Redirecting to home…</p>
+          </div>
+        </div>
       </div>
     </section>
   </main>
@@ -209,7 +176,7 @@
     <div class="container footer-bottom"><p>&copy; 2026 PeerScholars · <a href="report-concern.html">Report a Concern</a></p></div>
   </footer>
   <script src="js/config.js"></script>
-  <script src="js/interests.js"></script>
+  <script src="js/subjects.js"></script>
   <script src="js/availability.js"></script>
   <script src="js/store.js"></script>
   <script src="js/matching.js"></script>

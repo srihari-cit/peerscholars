@@ -8,31 +8,27 @@ const familyFields = document.getElementById('family-fields');
 const tutorFields = document.getElementById('tutor-fields');
 const backBtn = document.getElementById('signup-back');
 const signupIntro = document.getElementById('signup-intro');
+const signupFastNote = document.getElementById('signup-fast-note');
 const submitBtn = document.getElementById('signup-submit');
-
-function setRequired(container, selectors, required) {
-  selectors.forEach((selector) => {
-    const el = container.querySelector(selector);
-    if (el) el.required = required;
-  });
-}
+const successOverlay = document.getElementById('signup-success');
+const gradesSelectAll = document.getElementById('grades-select-all');
 
 function clearForm() {
   form.reset();
   form.querySelectorAll('input[type="checkbox"]').forEach((cb) => {
     cb.checked = false;
   });
-}
-
-function collectCheckboxValues(name) {
-  return [...form.querySelectorAll(`input[name="${name}"]:checked`)]
-    .map((input) => input.value)
-    .join(', ');
+  form.querySelectorAll('.subject-other-input').forEach((el) => {
+    el.hidden = true;
+    el.value = '';
+  });
+  PSAvailability.resetPickers(form);
 }
 
 function showRolePicker() {
   rolePickerCard.hidden = false;
   form.hidden = true;
+  successOverlay.hidden = true;
   familyFields.hidden = true;
   tutorFields.hidden = true;
   roleInput.value = '';
@@ -50,91 +46,108 @@ function showForm(role) {
   roleInput.value = role;
   rolePickerCard.hidden = true;
   form.hidden = false;
+  successOverlay.hidden = true;
   familyFields.hidden = role !== 'family';
   tutorFields.hidden = role !== 'tutor';
 
   if (submitBtn) {
-    submitBtn.textContent =
-      role === 'family' ? 'Create Account — Find a Tutor' : 'Submit Tutor Application';
+    submitBtn.textContent = role === 'family' ? 'Submit — Find a Tutor' : 'Submit Application';
   }
 
   if (signupIntro) {
     signupIntro.textContent =
       role === 'family'
-        ? 'Create your parent account and tell us about your K–8 student. Tutoring is $12.99/hour.'
-        : 'Apply to become a PeerScholars tutor. Upload your school ID and photo, then we\'ll email your parent/guardian to confirm.';
+        ? 'About 1 minute — tell us the basics and we’ll handle the rest.'
+        : 'About 1 minute — apply now. We’ll follow up about verification.';
+  }
+
+  if (signupFastNote) {
+    signupFastNote.textContent =
+      role === 'family'
+        ? 'Only the essentials — we’ll reach out to match your child with a tutor.'
+        : 'Only the essentials — we’ll email your parent/guardian and follow up with you.';
   }
 }
 
-function collectInterestTags(checkboxName, otherInputId) {
-  const tags = [...form.querySelectorAll(`input[name="${checkboxName}"]:checked`)]
-    .map((c) => c.value)
-    .filter((v) => v !== 'other');
-  const other = document.getElementById(otherInputId)?.value?.trim();
-  if (other) tags.push(other);
-  return tags;
+function bindOtherToggle(checkboxId, inputId) {
+  form.querySelector(`#${checkboxId}`)?.addEventListener('change', (e) => {
+    const el = document.getElementById(inputId);
+    if (el) {
+      el.hidden = !e.target.checked;
+      if (!e.target.checked) el.value = '';
+    }
+  });
 }
 
-function interestsToText(tags) {
-  return tags.map((id) => PSInterests.labelFor(id)).join(', ');
+function initGradesSelectAll() {
+  const gradeBoxes = [...form.querySelectorAll('input[name="grades-can-teach"]')];
+  gradesSelectAll?.addEventListener('change', () => {
+    gradeBoxes.forEach((cb) => {
+      cb.checked = gradesSelectAll.checked;
+    });
+  });
+  gradeBoxes.forEach((cb) => {
+    cb.addEventListener('change', () => {
+      if (!gradesSelectAll) return;
+      gradesSelectAll.checked = gradeBoxes.length > 0 && gradeBoxes.every((g) => g.checked);
+    });
+  });
 }
 
 function initSignupUI() {
-  const familyInterests = document.getElementById('family-interests-grid');
-  const tutorInterests = document.getElementById('tutor-interests-grid');
+  const familySubjects = document.getElementById('family-subjects-grid');
+  const tutorSubjects = document.getElementById('tutor-subjects-grid');
   const familyAvail = document.getElementById('family-availability');
   const tutorAvail = document.getElementById('tutor-availability');
 
-  if (familyInterests) familyInterests.innerHTML = PSInterests.renderCheckboxGrid('interest-tags', 'family');
-  if (tutorInterests) tutorInterests.innerHTML = PSInterests.renderCheckboxGrid('tutor-interest-tags', 'tutor');
-  if (familyAvail) familyAvail.innerHTML = PSAvailability.renderDayTimePicker('availability-days', 'family-avail', 'family-availability');
-  if (tutorAvail) tutorAvail.innerHTML = PSAvailability.renderDayTimePicker('tutor-availability-days', 'tutor-avail', 'tutor-availability');
+  if (familySubjects) familySubjects.innerHTML = PSSubjects.renderCheckboxGrid('subjects-needed', 'family');
+  if (tutorSubjects) tutorSubjects.innerHTML = PSSubjects.renderCheckboxGrid('subjects-teach', 'tutor');
+  if (familyAvail) familyAvail.innerHTML = PSAvailability.renderDayTimePicker('availability-days', 'family-availability');
+  if (tutorAvail) tutorAvail.innerHTML = PSAvailability.renderDayTimePicker('tutor-availability-days', 'tutor-availability');
 
   PSAvailability.initDayTimePickers(form);
-
-  form.querySelector('#family-interest-other-cb')?.addEventListener('change', (e) => {
-    const el = document.getElementById('family-interest-other');
-    if (el) el.hidden = !e.target.checked;
-  });
-  form.querySelector('#tutor-interest-other-cb')?.addEventListener('change', (e) => {
-    const el = document.getElementById('tutor-interest-other');
-    if (el) el.hidden = !e.target.checked;
-  });
+  bindOtherToggle('family-subject-other-cb', 'family-subject-other');
+  bindOtherToggle('tutor-subject-other-cb', 'tutor-subject-other');
+  initGradesSelectAll();
 }
 
 function validateFamily() {
   if (!form.querySelector('#parent-consent')?.checked) {
-    return 'Please confirm parent/guardian consent.';
+    return 'Please confirm the agreement checkbox to continue.';
   }
-  const tags = collectInterestTags('interest-tags', 'family-interest-other');
-  if (!tags.length) return 'Please select at least one interest.';
-  const slots = PSAvailability.collectFromForm(form, 'availability-days', 'family-avail');
-  if (!slots.length) return 'Please select at least one day and time you are available.';
-  return null;
+  const subjects = PSSubjects.collectFromForm(form, 'subjects-needed', 'family-subject-other');
+  if (!subjects.labels.length) return 'Please select at least one subject.';
+  return PSAvailability.validateForm(form, 'availability-days');
 }
 
 function validateTutor() {
-  const grades = collectCheckboxValues('grades-can-teach');
-  if (!grades) return 'Please select at least one grade level you can tutor.';
-  if (!form.querySelector('#weekly-capacity')?.value) return 'Please select your weekly student capacity.';
-  const tags = collectInterestTags('tutor-interest-tags', 'tutor-interest-other');
-  if (!tags.length) return 'Please select at least one interest.';
-  const slots = PSAvailability.collectFromForm(form, 'tutor-availability-days', 'tutor-avail');
-  if (!slots.length) return 'Please select at least one day and time you are available to tutor.';
-  if (!form.querySelector('#code-of-conduct-read')?.checked) {
-    return 'Please confirm you have read the Tutor Code of Conduct.';
+  const subjects = PSSubjects.collectFromForm(form, 'subjects-teach', 'tutor-subject-other');
+  if (!subjects.labels.length) return 'Please select at least one subject you can teach.';
+  const grades = [...form.querySelectorAll('input[name="grades-can-teach"]:checked')];
+  if (!grades.length) return 'Please select at least one grade (or use Select all grades).';
+  const availError = PSAvailability.validateForm(form, 'tutor-availability-days');
+  if (availError) return availError;
+  if (!form.querySelector('#tutor-consent')?.checked) {
+    return 'Please confirm the agreement checkbox to continue.';
   }
-  const schoolId = form.querySelector('#school-id')?.files?.[0];
-  const tutorPhoto = form.querySelector('#tutor-photo')?.files?.[0];
-  if (!schoolId) return 'Please upload a clear photo of your school ID.';
-  if (!tutorPhoto) return 'Please upload a clear photo of yourself.';
-  if (schoolId.size > 5 * 1024 * 1024) return 'School ID photo must be under 5 MB.';
-  if (tutorPhoto.size > 5 * 1024 * 1024) return 'Your photo must be under 5 MB.';
   const parentEmail = form.querySelector('#parent-guardian-email')?.value.trim();
   if (!parentEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(parentEmail)) {
     return 'Please enter a valid parent/guardian email address.';
   }
   return null;
+}
+
+function showSignupSuccess() {
+  form.hidden = true;
+  rolePickerCard.hidden = true;
+  successOverlay.hidden = false;
+  if (signupIntro) {
+    signupIntro.textContent = 'Thank you! We received your submission.';
+  }
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  setTimeout(() => {
+    window.location.href = 'index.html';
+  }, 2800);
 }
 
 async function handleSubmit(e) {
@@ -148,13 +161,14 @@ async function handleSubmit(e) {
   if (error) {
     errorNote.textContent = error;
     errorNote.hidden = false;
+    errorNote.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     return;
   }
 
   errorNote.hidden = true;
   const originalText = submitBtn.textContent;
   submitBtn.disabled = true;
-  submitBtn.textContent = 'Creating account...';
+  submitBtn.textContent = 'Submitting…';
 
   const fd = new FormData(form);
 
@@ -164,12 +178,28 @@ async function handleSubmit(e) {
     } else {
       await submitTutor(fd);
     }
+    showSignupSuccess();
   } catch (err) {
     errorNote.textContent = err.message || 'Something went wrong. Please try again.';
     errorNote.hidden = false;
     submitBtn.disabled = false;
     submitBtn.textContent = originalText;
   }
+}
+
+function buildAvailabilityPayload(formEl, dayCheckboxName) {
+  const availabilitySlots = PSAvailability.collectFromForm(formEl, dayCheckboxName);
+  const availabilityMap = PSAvailability.slotsToMap(availabilitySlots);
+  const availabilityText = availabilitySlots
+    .map((s) =>
+      PSAvailability.formatSlot({
+        day: s.day,
+        start: PSAvailability.toMinutes(s.startTime),
+        end: PSAvailability.toMinutes(s.endTime),
+      })
+    )
+    .join('; ');
+  return { availabilitySlots, availabilityMap, availabilityText };
 }
 
 async function submitFamily(fd) {
@@ -184,33 +214,37 @@ async function submitFamily(fd) {
     password,
     role: 'parent',
     firstName: fd.get('parent-first-name'),
-    lastName: fd.get('parent-last-name'),
+    lastName: '',
     phone: fd.get('phone'),
     city: fd.get('city'),
-    state: fd.get('state'),
-    relationship: fd.get('relationship'),
+    state: '',
+    relationship: 'Parent',
     consent: true,
   });
 
   if (user.error) throw new Error(user.error);
 
-  const interestTags = collectInterestTags('interest-tags', 'family-interest-other');
-  const availabilitySlots = PSAvailability.collectFromForm(form, 'availability-days', 'family-avail');
-  const availabilityText = availabilitySlots.map((s) => PSAvailability.formatSlot({ day: s.day, start: PSAvailability.toMinutes(s.startTime), end: PSAvailability.toMinutes(s.endTime) })).join('; ');
+  const subjects = PSSubjects.collectFromForm(form, 'subjects-needed', 'family-subject-other');
+  const { availabilitySlots, availabilityMap, availabilityText } = buildAvailabilityPayload(
+    form,
+    'availability-days'
+  );
 
   const student = PSStore.createStudent(user.id, {
     firstName: fd.get('child-first-name'),
     grade: fd.get('child-grade'),
-    school: fd.get('child-school') || '',
-    subjects: fd.get('subjects-needed'),
-    topics: fd.get('topics-needed') || '',
+    school: '',
+    subjects: subjects.text,
+    subjectTags: subjects.ids,
+    topics: '',
     availability: availabilityText,
     availabilitySlots,
+    availabilityMap,
     mode: 'Online',
-    learningPrefs: fd.get('learning-prefs') || '',
-    interests: interestsToText(interestTags),
-    interestTags,
-    notes: fd.get('tutoring-notes') || '',
+    learningPrefs: '',
+    interests: '',
+    interestTags: [],
+    notes: '',
   });
 
   PSStore.createTutoringRequest({
@@ -220,15 +254,23 @@ async function submitFamily(fd) {
     grade: student.grade,
     mode: 'Online',
     city: fd.get('city'),
-    interests: student.interests,
-    interestTags,
+    interests: '',
+    interestTags: [],
     availability: availabilityText,
     availabilitySlots,
+    availabilityMap,
   });
 
-  await PSUtils.notifySupport('New PeerScholars Parent Sign Up', Object.fromEntries(fd));
-
-  window.location.href = 'parent-dashboard.html?welcome=1';
+  await PSUtils.notifySupport('New PeerScholars Parent Sign Up', {
+    parent_name: fd.get('parent-first-name'),
+    email: fd.get('email'),
+    phone: fd.get('phone'),
+    city: fd.get('city'),
+    child_name: fd.get('child-first-name'),
+    child_grade: fd.get('child-grade'),
+    subjects: subjects.text,
+    availability: availabilityText,
+  });
 }
 
 async function submitTutor(fd) {
@@ -248,92 +290,77 @@ async function submitTutor(fd) {
 
   if (user.error) throw new Error(user.error);
 
-  const schoolIdFile = form.querySelector('#school-id').files[0];
-  const tutorPhotoFile = form.querySelector('#tutor-photo').files[0];
-  const schoolIdData = await PSUtils.readFileAsDataURL(schoolIdFile);
-  const tutorPhotoData = await PSUtils.readFileAsDataURL(tutorPhotoFile);
-
-  const parentFirstName = fd.get('parent-first-name');
-  const parentLastName = fd.get('parent-last-name');
   const parentEmail = fd.get('parent-guardian-email');
-  const parentPhone = fd.get('parent-guardian-phone');
   const tutorFirstName = fd.get('tutor-first-name');
+  const tutorLastName = fd.get('tutor-last-name');
 
-  const tutorInterestTags = collectInterestTags('tutor-interest-tags', 'tutor-interest-other');
-  const tutorAvailabilitySlots = PSAvailability.collectFromForm(form, 'tutor-availability-days', 'tutor-avail');
-  const tutorAvailabilityText = tutorAvailabilitySlots.map((s) => PSAvailability.formatSlot({ day: s.day, start: PSAvailability.toMinutes(s.startTime), end: PSAvailability.toMinutes(s.endTime) })).join('; ');
+  const subjects = PSSubjects.collectFromForm(form, 'subjects-teach', 'tutor-subject-other');
+  const { availabilitySlots, availabilityMap, availabilityText } = buildAvailabilityPayload(
+    form,
+    'tutor-availability-days'
+  );
 
   const profile = PSStore.createTutorProfile(user.id, {
     firstName: tutorFirstName,
-    lastName: fd.get('tutor-last-name'),
-    age: Number(fd.get('age')),
+    lastName: tutorLastName,
     grade: fd.get('tutor-grade'),
     school: fd.get('school'),
     city: fd.get('city'),
-    state: fd.get('state'),
-    parentFirstName,
-    parentLastName,
-    parentName: `${parentFirstName} ${parentLastName}`.trim(),
+    state: '',
+    parentFirstName: '',
+    parentLastName: '',
+    parentName: 'Parent/Guardian',
     parentEmail,
-    parentPhone,
-    subjects: fd.get('subjects-teach'),
+    parentPhone: '',
+    subjects: subjects.text,
+    subjectTags: subjects.ids,
     gradesCanTeach: [...form.querySelectorAll('input[name="grades-can-teach"]:checked')].map(
       (c) => c.value
     ),
-    weeklyCapacity: Number(fd.get('weekly-capacity')) || 1,
+    weeklyCapacity: Number(fd.get('weekly-capacity')) || 3,
     activeStudentCount: 0,
-    availability: tutorAvailabilityText,
-    availabilitySlots: tutorAvailabilitySlots,
+    availability: availabilityText,
+    availabilitySlots,
+    availabilityMap,
     mode: 'Online',
-    bio: fd.get('bio'),
-    interests: interestsToText(tutorInterestTags),
-    interestTags: tutorInterestTags,
-    whyTutor: fd.get('why-tutor'),
-    experience: fd.get('experience'),
-    schoolIdUploaded: true,
-    schoolIdName: schoolIdFile.name,
-    schoolIdData,
-    tutorPhotoUploaded: true,
-    tutorPhotoName: tutorPhotoFile.name,
-    tutorPhotoData,
-    schoolDocStatus: 'Submitted',
-    applicationStatus: 'Parent Verification Pending',
-    parentVerificationStatus: 'Parent Verification Pending',
+    bio: '',
+    interests: '',
+    interestTags: [],
+    whyTutor: '',
+    experience: '',
+    schoolIdUploaded: false,
+    tutorPhotoUploaded: false,
+    schoolDocStatus: 'Not submitted',
+    applicationStatus: 'Application Submitted',
+    parentVerificationStatus: 'Pending',
     adminDecision: 'Pending',
   });
 
-  const pv = PSStore.createParentVerification(
-    profile.id,
-    parentEmail,
-    `${parentFirstName} ${parentLastName}`.trim(),
-    parentFirstName
-  );
+  const pv = PSStore.createParentVerification(profile.id, parentEmail, 'Parent/Guardian', '');
 
   const basePath = window.location.pathname.replace(/[^/]*$/, '');
   const verifyUrl = `${window.location.origin}${basePath}parent-verify.html?token=${pv.token}`;
 
   await PSUtils.notifySupport('New PeerScholars Tutor Application', {
-    tutor_name: `${tutorFirstName} ${fd.get('tutor-last-name')}`,
+    tutor_name: `${tutorFirstName} ${tutorLastName}`,
     school: fd.get('school'),
     grade: fd.get('tutor-grade'),
-    parent_name: `${parentFirstName} ${parentLastName}`,
+    city: fd.get('city'),
+    subjects: subjects.text,
+    grades: profile.gradesCanTeach.join(', '),
+    availability: availabilityText,
     parent_email: parentEmail,
-    parent_phone: parentPhone,
-    school_id_uploaded: 'Yes',
-    tutor_photo_uploaded: 'Yes',
-    status: 'Parent Verification Pending',
+    status: 'Application Submitted — follow up for verification',
     parent_verification_link: verifyUrl,
-    note: 'School ID and verification photo stored securely — admin dashboard only.',
+    note: 'Fast signup — collect school ID and photo manually if needed.',
   });
 
   await PSUtils.sendParentVerificationEmail({
     parentEmail,
-    parentFirstName,
+    parentFirstName: 'there',
     tutorFirstName,
     verifyUrl,
   });
-
-  window.location.href = 'tutor-dashboard.html?welcome=1';
 }
 
 rolePicker?.addEventListener('click', (e) => {
