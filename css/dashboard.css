@@ -358,9 +358,22 @@
   gap: 0.35rem;
   flex-wrap: wrap;
 }
-.availability-slot-row.avail-invalid input[type="time"] {
+.availability-slot-row.avail-invalid select {
   border-color: #c0392b;
   background: #fff5f5;
+}
+.availability-slot-row select {
+  padding: 0.4rem 0.5rem;
+  padding-right: 1.75rem;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius);
+  font-size: 0.875rem;
+  min-height: 2.5rem;
+  flex: 1 1 6.5rem;
+  min-width: 0;
+  max-width: 9rem;
+  background: var(--white);
+  cursor: pointer;
 }
 .availability-times input[type="time"],
 .availability-slot-row input[type="time"] {

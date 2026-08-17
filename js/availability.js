@@ -19,6 +19,11 @@ window.PSAvailability = {
     Sat: 'saturday',
     Sun: 'sunday',
   },
+  TIME_MIN: 7 * 60,
+  TIME_MAX: 21 * 60,
+  TIME_STEP: 30,
+  DEFAULT_START: '13:00',
+  DEFAULT_END: '15:00',
 
   toMinutes(timeStr) {
     if (!timeStr) return 0;
@@ -32,6 +37,40 @@ window.PSAvailability = {
     const d = new Date();
     d.setHours(h, m, 0);
     return d.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+  },
+
+  eachTimeSlot(callback) {
+    for (let mins = this.TIME_MIN; mins <= this.TIME_MAX; mins += this.TIME_STEP) {
+      callback(mins, this.minutesToTime(mins), this.formatMinutes(mins));
+    }
+  },
+
+  buildStartOptions(selected = this.DEFAULT_START) {
+    let html = '';
+    this.eachTimeSlot((mins, value, label) => {
+      if (mins >= this.TIME_MAX) return;
+      html += `<option value="${value}"${value === selected ? ' selected' : ''}>${label}</option>`;
+    });
+    return html;
+  },
+
+  buildEndOptions(startValue, selected = this.DEFAULT_END) {
+    const startMin = this.toMinutes(startValue || this.DEFAULT_START);
+    let html = '';
+    let hasSelected = false;
+    this.eachTimeSlot((mins, value, label) => {
+      if (mins <= startMin) return;
+      const isSelected = value === selected;
+      if (isSelected) hasSelected = true;
+      html += `<option value="${value}"${isSelected ? ' selected' : ''}>${label}</option>`;
+    });
+    if (!html) {
+      const fallback = this.minutesToTime(Math.min(startMin + this.TIME_STEP, this.TIME_MAX));
+      html = `<option value="${fallback}" selected>${this.formatMinutes(this.toMinutes(fallback))}</option>`;
+    } else if (!hasSelected) {
+      html = html.replace('<option ', '<option selected ', 1);
+    }
+    return html;
   },
 
   parseSlots(source) {
@@ -114,12 +153,37 @@ window.PSAvailability = {
     return slots.slice(0, limit).map((s) => this.formatSlot(s)).join('<br>');
   },
 
-  slotRowHtml(day) {
+  getSlotValues(row) {
+    const startEl = row.querySelector('[data-slot-start]');
+    const endEl = row.querySelector('[data-slot-end]');
+    return {
+      startTime: startEl?.value?.trim() || '',
+      endTime: endEl?.value?.trim() || '',
+    };
+  },
+
+  syncEndSelect(row) {
+    const startEl = row.querySelector('[data-slot-start]');
+    const endEl = row.querySelector('[data-slot-end]');
+    if (!startEl || !endEl) return;
+    const prevEnd = endEl.value;
+    endEl.innerHTML = this.buildEndOptions(startEl.value, prevEnd);
+  },
+
+  setSlotDefaults(row, start = this.DEFAULT_START, end = this.DEFAULT_END) {
+    const startEl = row.querySelector('[data-slot-start]');
+    const endEl = row.querySelector('[data-slot-end]');
+    if (startEl) startEl.innerHTML = this.buildStartOptions(start);
+    if (endEl) endEl.innerHTML = this.buildEndOptions(start, end);
+    row.classList.remove('avail-invalid');
+  },
+
+  slotRowHtml(day, startVal = this.DEFAULT_START, endVal = this.DEFAULT_END) {
     const dayLabel = this.DAY_LABELS[day] || day;
     return `<div class="availability-slot-row">
-      <input type="time" data-slot-start value="13:00" aria-label="Start time for ${dayLabel}">
+      <select data-slot-start aria-label="Start time for ${dayLabel}">${this.buildStartOptions(startVal)}</select>
       <span class="availability-sep" aria-hidden="true">–</span>
-      <input type="time" data-slot-end value="15:00" aria-label="End time for ${dayLabel}">
+      <select data-slot-end aria-label="End time for ${dayLabel}">${this.buildEndOptions(startVal, endVal)}</select>
       <button type="button" class="avail-remove" hidden aria-label="Remove time range">×</button>
     </div>`;
   },
@@ -148,8 +212,7 @@ window.PSAvailability = {
     form.querySelectorAll(`input[name="${dayCheckboxName}"]:checked`).forEach((cb) => {
       const panel = cb.closest('.availability-day-row')?.querySelector('.availability-slots-panel');
       panel?.querySelectorAll('.availability-slot-row').forEach((row) => {
-        const startTime = row.querySelector('[data-slot-start]')?.value?.trim();
-        const endTime = row.querySelector('[data-slot-end]')?.value?.trim();
+        const { startTime, endTime } = this.getSlotValues(row);
         if (!startTime || !endTime) return;
         if (this.toMinutes(endTime) > this.toMinutes(startTime)) {
           slots.push({ day: cb.value, startTime, endTime });
@@ -164,8 +227,7 @@ window.PSAvailability = {
     form.querySelectorAll(`input[name="${dayCheckboxName}"]:checked`).forEach((cb) => {
       const panel = cb.closest('.availability-day-row')?.querySelector('.availability-slots-panel');
       panel?.querySelectorAll('.availability-slot-row').forEach((row) => {
-        const startTime = row.querySelector('[data-slot-start]')?.value?.trim();
-        const endTime = row.querySelector('[data-slot-end]')?.value?.trim();
+        const { startTime, endTime } = this.getSlotValues(row);
         const bad =
           startTime &&
           endTime &&
@@ -191,11 +253,7 @@ window.PSAvailability = {
         if (index > 0) slotRow.remove();
       });
       const first = panel.querySelector('.availability-slot-row');
-      if (first) {
-        first.querySelector('[data-slot-start]').value = '13:00';
-        first.querySelector('[data-slot-end]').value = '15:00';
-        first.classList.remove('avail-invalid');
-      }
+      if (first) this.setSlotDefaults(first);
     });
   },
 
@@ -232,6 +290,12 @@ window.PSAvailability = {
           const panel = row?.closest('.availability-slots-panel');
           row?.remove();
           if (panel) this.syncRemoveButtons(panel);
+        }
+      });
+
+      schedule.addEventListener('change', (e) => {
+        if (e.target.matches('[data-slot-start]')) {
+          this.syncEndSelect(e.target.closest('.availability-slot-row'));
         }
       });
 
