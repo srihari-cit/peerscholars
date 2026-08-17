@@ -314,5 +314,33 @@ window.PSAvailability = {
         sync();
       });
     });
+
+    root.querySelectorAll('[data-avail-select-all]').forEach((selectAll) => {
+      this.bindSelectAllDays(selectAll);
+    });
+  },
+
+  bindSelectAllDays(selectAllCheckbox) {
+    const scheduleId = selectAllCheckbox.dataset.availSelectAll;
+    const schedule = document.getElementById(scheduleId);
+    if (!schedule) return;
+
+    const dayBoxes = [...schedule.querySelectorAll('[data-avail-day]')];
+    const syncSelectAll = () => {
+      selectAllCheckbox.checked = dayBoxes.length > 0 && dayBoxes.every((d) => d.checked);
+    };
+
+    selectAllCheckbox.addEventListener('change', () => {
+      dayBoxes.forEach((cb) => {
+        if (cb.checked !== selectAllCheckbox.checked) {
+          cb.checked = selectAllCheckbox.checked;
+          cb.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+      });
+    });
+
+    dayBoxes.forEach((cb) => {
+      cb.addEventListener('change', syncSelectAll);
+    });
   },
 };

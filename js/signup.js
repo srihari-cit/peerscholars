@@ -23,6 +23,9 @@ function clearForm() {
     el.value = '';
   });
   PSAvailability.resetPickers(form);
+  form.querySelectorAll('[data-avail-select-all]').forEach((el) => {
+    el.checked = false;
+  });
 }
 
 function showRolePicker() {

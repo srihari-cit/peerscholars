@@ -305,6 +305,17 @@
   padding: 0.35rem 0;
 }
 .grades-select-all input { width: auto; margin: 0; }
+.avail-select-all-days {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  margin: 0 0 0.5rem;
+  cursor: pointer;
+  padding: 0.15rem 0;
+}
+.avail-select-all-days input { width: auto; margin: 0; }
 .avail-day-full { display: none; }
 .availability-instruction { margin: 0 0 0.5rem; font-size: 0.82rem; }
 @media (min-width: 520px) {
