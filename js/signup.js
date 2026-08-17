@@ -140,17 +140,39 @@ function validateTutor() {
   return null;
 }
 
-function showSignupSuccess() {
+function showSignupSuccess(role) {
   form.hidden = true;
   rolePickerCard.hidden = true;
   successOverlay.hidden = false;
-  if (signupIntro) {
-    signupIntro.textContent = 'Thank you! We received your submission.';
+
+  const messageEl = document.getElementById('signup-success-message');
+  if (messageEl) {
+    messageEl.textContent =
+      role === 'family'
+        ? 'Your registration has been submitted successfully. Our PeerScholars team will review your information and contact you soon to help match your child with a tutor.'
+        : 'Your tutor application has been submitted successfully. Our PeerScholars team will review your information and get back to you soon with next steps.';
   }
+
+  if (signupIntro) {
+    signupIntro.textContent = 'Thank you — your submission is complete.';
+  }
+
   window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  let secondsLeft = 10;
+  const countdownEl = document.getElementById('signup-success-countdown');
+  if (countdownEl) countdownEl.textContent = String(secondsLeft);
+
+  const countdownTimer = setInterval(() => {
+    secondsLeft -= 1;
+    if (countdownEl) countdownEl.textContent = String(Math.max(secondsLeft, 0));
+    if (secondsLeft <= 0) clearInterval(countdownTimer);
+  }, 1000);
+
   setTimeout(() => {
+    clearInterval(countdownTimer);
     window.location.href = 'index.html';
-  }, 2800);
+  }, 10000);
 }
 
 async function handleSubmit(e) {
@@ -181,7 +203,7 @@ async function handleSubmit(e) {
     } else {
       await submitTutor(fd);
     }
-    showSignupSuccess();
+    showSignupSuccess(role);
   } catch (err) {
     errorNote.textContent = err.message || 'Something went wrong. Please try again.';
     errorNote.hidden = false;
