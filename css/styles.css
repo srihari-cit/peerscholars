@@ -579,6 +579,8 @@ h3 { font-size: 1.0625rem; font-weight: 600; }
 }
 .badge-green { background: var(--green-100); color: var(--green-700); }
 .badge-blue { background: var(--blue-100); color: var(--blue-700); }
+.badge-orange { background: #fff3e0; color: #c2410c; }
+.badge-gray { background: var(--gray-100); color: var(--text-light); }
 
 /* Forms */
 .form-page { max-width: 520px; margin-inline: auto; }

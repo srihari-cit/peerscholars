@@ -36,11 +36,12 @@ function renderParentDashboard(user, root, welcome) {
         <button class="btn btn-primary" id="pay-first-session">Pay $${PS_CONFIG.PARENT_RATE} — Start Matching</button>
         <p class="field-hint" style="margin-top:0.75rem;">Launch mode: this simulates payment. Real payment processing will be added later.</p>
       </div>`;
-    root.innerHTML = html + renderStudentPanel(student) + renderSessions(sessions, reports, state);
+    root.innerHTML = html + renderStudentPanel(student) + renderSessionConfirmPanel(sessions) + renderSessions(sessions, reports, state);
     document.getElementById('pay-first-session')?.addEventListener('click', () => {
       PSStore.confirmFirstPayment(request.id);
       location.reload();
     });
+    bindSessionConfirmEvents();
     return;
   }
 
@@ -70,11 +71,72 @@ function renderParentDashboard(user, root, welcome) {
   }
 
   html += renderStudentPanel(student);
+  html += renderSessionConfirmPanel(sessions, state);
   html += renderSessions(sessions, reports, state);
   html += '<div class="dash-panel"><a href="report-concern.html" class="btn btn-secondary">Report a Concern</a></div>';
 
   root.innerHTML = html;
   bindMatchEvents(request, student, state);
+  bindSessionConfirmEvents();
+}
+
+function renderSessionConfirmPanel(sessions) {
+  const pending = sessions.filter(
+    (s) =>
+      s.status !== 'Disputed' &&
+      s.paymentStatus !== 'paid' &&
+      (PSUtils.sessionCanConfirm(s, 'parent') || s.status === 'Awaiting Confirmation' || s.status === 'Scheduled')
+  );
+  if (!pending.length) return '';
+  return `<div class="dash-panel session-confirm-panel">
+    <h2>Confirm completed sessions</h2>
+    <p class="field-hint">Payment ($12.99) is released only after <strong>you and the tutor both</strong> confirm the session happened.</p>
+    ${pending
+      .map((s) => {
+        const canConfirm = PSUtils.sessionCanConfirm(s, 'parent');
+        return `<div class="session-confirm-card">
+          <p><strong>${PSUtils.formatDate(s.date)} · ${PSUtils.formatTime(s.startTime)}</strong> · ${PSUtils.esc(s.subject)}</p>
+          <p class="field-hint">${PSUtils.sessionConfirmNote(s)}</p>
+          <p class="session-confirm-status">
+            <span class="${s.parentConfirmed ? 'confirm-yes' : 'confirm-no'}">Parent ${s.parentConfirmed ? '✓' : '…'}</span>
+            <span class="${s.tutorConfirmed ? 'confirm-yes' : 'confirm-no'}">Tutor ${s.tutorConfirmed ? '✓' : '…'}</span>
+          </p>
+          ${
+            canConfirm
+              ? `<div class="btn-row">
+                  <button type="button" class="btn btn-primary btn-small" data-parent-confirm-session="${s.id}">Yes — session happened</button>
+                  <button type="button" class="btn btn-secondary btn-small" data-parent-dispute-session="${s.id}">Report an issue</button>
+                </div>`
+              : ''
+          }
+        </div>`;
+      })
+      .join('')}
+  </div>`;
+}
+
+function bindSessionConfirmEvents() {
+  document.getElementById('dashboard-root')?.addEventListener('click', (e) => {
+    const confirmBtn = e.target.closest('[data-parent-confirm-session]');
+    if (confirmBtn) {
+      PSStore.parentConfirmSession(confirmBtn.dataset.parentConfirmSession);
+      const session = PSStore.getState().sessions.find((s) => s.id === confirmBtn.dataset.parentConfirmSession);
+      alert(
+        session?.paymentStatus === 'paid'
+          ? 'Both confirmed! Payment has been recorded. The tutor will receive $9.'
+          : 'Thank you! Waiting for the tutor to confirm. Payment releases after both confirm.'
+      );
+      location.reload();
+      return;
+    }
+    const disputeBtn = e.target.closest('[data-parent-dispute-session]');
+    if (disputeBtn) {
+      if (!confirm('Report an issue with this session? Payment will be held while PeerScholars reviews.')) return;
+      PSStore.disputeSession(disputeBtn.dataset.parentDisputeSession, 'parent');
+      alert('Issue reported. PeerScholars will follow up at support@peerscholars.com.');
+      location.reload();
+    }
+  });
 }
 
 function renderStudentPanel(student) {
@@ -181,12 +243,20 @@ function renderSessionConfirmation(session, state) {
 function renderSessions(sessions, reports, state) {
   if (!sessions.length) return '<div class="dash-panel"><h2>Sessions</h2><p class="field-hint">No sessions scheduled yet.</p></div>';
   return `<div class="dash-panel"><h2>Upcoming &amp; past sessions</h2>
-    <table class="data-table"><thead><tr><th>Date</th><th>Subject</th><th>Status</th><th>Meeting</th></tr></thead><tbody>
+    <table class="data-table"><thead><tr><th>Date</th><th>Subject</th><th>Status</th><th>Payment</th><th>Meeting</th></tr></thead><tbody>
     ${sessions.map((s) => {
       const report = reports.find((r) => r.sessionId === s.id);
       let meet = s.meetingLink ? `<a href="${PSUtils.esc(s.meetingLink)}" target="_blank" rel="noopener">Google Meet</a>` : '—';
       if (report) meet += `<br><small>Report: ${PSUtils.esc(report.topic)}</small>`;
-      return `<tr><td>${PSUtils.formatDate(s.date)} ${PSUtils.formatTime(s.startTime)}</td><td>${PSUtils.esc(s.subject)}</td><td>${PSUtils.badge(s.status, s.status === 'Completed' ? 'green' : 'blue')}</td><td>${meet}</td></tr>`;
+      const pay =
+        s.paymentStatus === 'paid'
+          ? PSUtils.badge('Paid', 'green')
+          : s.paymentStatus === 'disputed' || s.status === 'Disputed'
+            ? PSUtils.badge('Review', 'orange')
+            : s.parentConfirmed && s.tutorConfirmed
+              ? PSUtils.badge('Processing', 'blue')
+              : PSUtils.badge('Pending confirm', 'gray');
+      return `<tr><td>${PSUtils.formatDate(s.date)} ${PSUtils.formatTime(s.startTime)}</td><td>${PSUtils.esc(s.subject)}</td><td>${PSUtils.badge(s.status, s.status === 'Completed' ? 'green' : 'blue')}</td><td>${pay}</td><td>${meet}</td></tr>`;
     }).join('')}
     </tbody></table></div>`;
 }

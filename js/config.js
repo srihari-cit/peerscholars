@@ -29,8 +29,10 @@ window.PS_CONFIG = {
   ],
   SESSION_STATUSES: [
     'Scheduled',
+    'Awaiting Confirmation',
     'Started',
     'Completed',
+    'Disputed',
     'Cancelled',
     'Tutor no-show',
     'Student no-show',

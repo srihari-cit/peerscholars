@@ -546,3 +546,19 @@
   margin-bottom: 1.35rem !important;
 }
 .signup-success-redirect { margin-top: 1.15rem !important; margin-bottom: 0 !important; font-size: 0.82rem; }
+
+.session-confirm-panel .field-hint { margin-bottom: 0.85rem; }
+.session-confirm-card {
+  padding: 0.85rem 0;
+  border-bottom: 1px solid var(--gray-100);
+}
+.session-confirm-card:last-child { border-bottom: none; padding-bottom: 0; }
+.session-confirm-status {
+  display: flex;
+  gap: 0.75rem;
+  margin: 0.5rem 0 0.65rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+.confirm-yes { color: #2e7d32; }
+.confirm-no { color: var(--text-light); }

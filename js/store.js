@@ -228,6 +228,11 @@
           meetingLink: 'https://meet.google.com/demo-peerscholars-session',
           location: '',
           status: 'Scheduled',
+          parentConfirmed: false,
+          tutorConfirmed: false,
+          parentConfirmedAt: null,
+          tutorConfirmedAt: null,
+          paymentStatus: 'pending',
           createdAt: now(),
         },
         {
@@ -244,6 +249,11 @@
           meetingLink: 'https://meet.google.com/demo-peerscholars-past',
           location: '',
           status: 'Completed',
+          parentConfirmed: true,
+          tutorConfirmed: true,
+          parentConfirmedAt: now(),
+          tutorConfirmedAt: now(),
+          paymentStatus: 'paid',
           createdAt: now(),
         },
       ],
@@ -636,6 +646,11 @@ function tutorDeclineMatch(matchId) {
         meetingLink: meetingLink || 'https://meet.google.com/peerscholars-session',
         location: '',
         status: 'Scheduled',
+        parentConfirmed: false,
+        tutorConfirmed: false,
+        parentConfirmedAt: null,
+        tutorConfirmedAt: null,
+        paymentStatus: 'pending',
         createdAt: now(),
       };
       s.sessions.push(session);
@@ -676,9 +691,73 @@ function tutorDeclineMatch(matchId) {
   }
 
   function createSession(data) {
-    const session = { id: uid('session'), status: 'Scheduled', createdAt: now(), ...data };
+    const session = {
+      id: uid('session'),
+      status: 'Scheduled',
+      parentConfirmed: false,
+      tutorConfirmed: false,
+      parentConfirmedAt: null,
+      tutorConfirmedAt: null,
+      paymentStatus: 'pending',
+      createdAt: now(),
+      ...data,
+    };
     write((s) => s.sessions.push(session));
     return session;
+  }
+
+  function finalizeSessionIfReady(s, session) {
+    if (!session || session.paymentStatus === 'paid' || session.paymentStatus === 'disputed') return;
+    if (session.parentConfirmed && session.tutorConfirmed) {
+      session.status = 'Completed';
+      session.paymentStatus = 'paid';
+      if (!s.payments.some((p) => p.sessionId === session.id)) {
+        const cfg = window.PS_CONFIG || {};
+        s.payments.push({
+          id: uid('pay'),
+          sessionId: session.id,
+          parentAmount: cfg.PARENT_RATE || 12.99,
+          tutorAmount: cfg.TUTOR_RATE || 9,
+          platformAmount: cfg.PLATFORM_RATE || 3.99,
+          status: 'Recorded',
+          note: 'Both parent and tutor confirmed session',
+          createdAt: now(),
+        });
+      }
+    } else if (session.parentConfirmed || session.tutorConfirmed) {
+      session.status = 'Awaiting Confirmation';
+    }
+  }
+
+  function parentConfirmSession(sessionId) {
+    write((s) => {
+      const session = s.sessions.find((x) => x.id === sessionId);
+      if (!session || session.paymentStatus === 'paid' || session.status === 'Disputed') return;
+      session.parentConfirmed = true;
+      session.parentConfirmedAt = now();
+      finalizeSessionIfReady(s, session);
+    });
+  }
+
+  function tutorConfirmSession(sessionId) {
+    write((s) => {
+      const session = s.sessions.find((x) => x.id === sessionId);
+      if (!session || session.paymentStatus === 'paid' || session.status === 'Disputed') return;
+      session.tutorConfirmed = true;
+      session.tutorConfirmedAt = now();
+      finalizeSessionIfReady(s, session);
+    });
+  }
+
+  function disputeSession(sessionId, role) {
+    write((s) => {
+      const session = s.sessions.find((x) => x.id === sessionId);
+      if (!session || session.paymentStatus === 'paid') return;
+      session.paymentStatus = 'disputed';
+      session.status = 'Disputed';
+      session.disputedBy = role;
+      session.disputedAt = now();
+    });
   }
 
   function updateSession(sessionId, updates) {
@@ -692,8 +771,6 @@ function tutorDeclineMatch(matchId) {
     const report = { id: uid('report'), createdAt: now(), ...data };
     write((s) => {
       s.sessionReports.push(report);
-      const session = s.sessions.find((x) => x.id === data.sessionId);
-      if (session) session.status = 'Completed';
     });
     return report;
   }
@@ -719,6 +796,8 @@ function tutorDeclineMatch(matchId) {
   function recordPayment(sessionId) {
     const cfg = window.PS_CONFIG || {};
     write((s) => {
+      if (s.payments.some((p) => p.sessionId === sessionId)) return;
+      const session = s.sessions.find((x) => x.id === sessionId);
       s.payments.push({
         id: uid('pay'),
         sessionId,
@@ -726,8 +805,13 @@ function tutorDeclineMatch(matchId) {
         tutorAmount: cfg.TUTOR_RATE || 9,
         platformAmount: cfg.PLATFORM_RATE || 3.99,
         status: 'Recorded',
+        note: session?.parentConfirmed && session?.tutorConfirmed ? 'Both confirmed' : 'Admin release',
         createdAt: now(),
       });
+      if (session) {
+        session.paymentStatus = 'paid';
+        session.status = 'Completed';
+      }
     });
   }
 
@@ -800,6 +884,9 @@ function tutorDeclineMatch(matchId) {
     approveMatch,
     createSession,
     updateSession,
+    parentConfirmSession,
+    tutorConfirmSession,
+    disputeSession,
     createSessionReport,
     createSafetyReport,
     updateSafetyReport,

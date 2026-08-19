@@ -109,6 +109,25 @@ The PeerScholars Team`;
     return '<span class="verified-badge">✓ PeerScholars Verified Tutor</span>';
   },
 
+  sessionConfirmNote(session) {
+    if (!session) return '';
+    if (session.paymentStatus === 'paid') return 'Payment recorded — tutor receives $9 for this session.';
+    if (session.status === 'Disputed' || session.paymentStatus === 'disputed') {
+      return 'This session is under review. No payment until PeerScholars resolves it.';
+    }
+    if (session.parentConfirmed && session.tutorConfirmed) return 'Both confirmed — payment is being processed.';
+    if (session.parentConfirmed) return 'You confirmed · waiting for tutor to confirm.';
+    if (session.tutorConfirmed) return 'Tutor confirmed · waiting for parent to confirm.';
+    return 'After the session, both parent and tutor must confirm before payment is released.';
+  },
+
+  sessionCanConfirm(session, role) {
+    if (!session || session.paymentStatus === 'paid' || session.status === 'Disputed') return false;
+    if (role === 'parent') return !session.parentConfirmed;
+    if (role === 'tutor') return !session.tutorConfirmed;
+    return false;
+  },
+
   tutorVerificationStage(tutor) {
     if (tutor.verified) return 'Verified';
     if (tutor.adminDecision === 'Verified' || tutor.adminDecision === 'Needs More Information')

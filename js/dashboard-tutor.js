@@ -79,6 +79,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     ${renderTutorMatchRequests(tutor, state)}
 
+    ${renderTutorSessionConfirmPanel(sessions)}
+
     <div class="dash-panel">
       <h2>Upcoming sessions</h2>
       ${
@@ -88,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
               .map(
                 (s) => `<div style="margin-bottom:0.75rem;">
                   <strong>${PSUtils.formatDate(s.date)} · ${PSUtils.esc(s.subject)}</strong>
-                  ${s.mode === 'Online' ? `<br><a href="${PSUtils.esc(s.meetingLink)}" target="_blank" rel="noopener">Open Google Meet</a>` : `<br>Location: ${PSUtils.esc(s.location)}`}
+                  ${s.meetingLink ? `<br><a href="${PSUtils.esc(s.meetingLink)}" target="_blank" rel="noopener">Open Google Meet</a>` : ''}
                 </div>`
               )
               .join('')
@@ -119,6 +121,8 @@ document.addEventListener('DOMContentLoaded', () => {
   root.addEventListener('click', (e) => {
     const acceptBtn = e.target.closest('[data-accept-match]');
     const declineBtn = e.target.closest('[data-decline-match]');
+    const confirmBtn = e.target.closest('[data-tutor-confirm-session]');
+    const disputeBtn = e.target.closest('[data-tutor-dispute-session]');
     if (acceptBtn) {
       PSStore.tutorAcceptMatch(acceptBtn.dataset.acceptMatch);
       location.reload();
@@ -128,8 +132,59 @@ document.addEventListener('DOMContentLoaded', () => {
       alert('Match declined. The student will see other recommended tutors.');
       location.reload();
     }
+    if (confirmBtn) {
+      PSStore.tutorConfirmSession(confirmBtn.dataset.tutorConfirmSession);
+      const session = PSStore.getState().sessions.find((s) => s.id === confirmBtn.dataset.tutorConfirmSession);
+      alert(
+        session?.paymentStatus === 'paid'
+          ? 'Both confirmed! Payment recorded — you will receive $9 for this session.'
+          : 'Thank you! Waiting for the parent to confirm. You earn $9 after both confirm.'
+      );
+      location.reload();
+    }
+    if (disputeBtn) {
+      if (!confirm('Report an issue with this session? Payment will be held while PeerScholars reviews.')) return;
+      PSStore.disputeSession(disputeBtn.dataset.tutorDisputeSession, 'tutor');
+      alert('Issue reported. PeerScholars will follow up.');
+      location.reload();
+    }
   });
 });
+
+function renderTutorSessionConfirmPanel(sessions) {
+  const pending = sessions.filter(
+    (s) =>
+      s.status !== 'Disputed' &&
+      s.paymentStatus !== 'paid' &&
+      (PSUtils.sessionCanConfirm(s, 'tutor') || s.status === 'Awaiting Confirmation' || s.status === 'Scheduled')
+  );
+  if (!pending.length) return '';
+  return `<div class="dash-panel session-confirm-panel">
+    <h2>Confirm completed sessions</h2>
+    <p class="field-hint">You earn <strong>$9</strong> only after <strong>you and the parent both</strong> confirm the session happened.</p>
+    ${pending
+      .map((s) => {
+        const canConfirm = PSUtils.sessionCanConfirm(s, 'tutor');
+        return `<div class="session-confirm-card">
+          <p><strong>${PSUtils.formatDate(s.date)} · ${PSUtils.formatTime(s.startTime)}</strong> · ${PSUtils.esc(s.subject)}</p>
+          <p class="field-hint">${PSUtils.sessionConfirmNote(s)}</p>
+          <p class="session-confirm-status">
+            <span class="${s.parentConfirmed ? 'confirm-yes' : 'confirm-no'}">Parent ${s.parentConfirmed ? '✓' : '…'}</span>
+            <span class="${s.tutorConfirmed ? 'confirm-yes' : 'confirm-no'}">Tutor ${s.tutorConfirmed ? '✓' : '…'}</span>
+          </p>
+          ${
+            canConfirm
+              ? `<div class="btn-row">
+                  <button type="button" class="btn btn-primary btn-small" data-tutor-confirm-session="${s.id}">Yes — session happened</button>
+                  <button type="button" class="btn btn-secondary btn-small" data-tutor-dispute-session="${s.id}">Report an issue</button>
+                </div>`
+              : ''
+          }
+        </div>`;
+      })
+      .join('')}
+  </div>`;
+}
 
 function renderTutorMatchRequests(tutor, state) {
   const pending = PSStore.getPendingMatchesForTutor(tutor.id);
@@ -195,9 +250,8 @@ document.addEventListener('submit', (e) => {
     durationMinutes: Number(fd.get('durationMinutes')) || 60,
   });
   const session = PSStore.getState().sessions.find((s) => s.id === fd.get('sessionId'));
-  if (session) {
-    PSStore.updateSession(session.id, { status: 'Completed' });
-    PSStore.recordPayment(session.id);
+  if (session && PSUtils.sessionCanConfirm(session, 'tutor')) {
+    PSStore.tutorConfirmSession(session.id);
   }
   location.reload();
 });

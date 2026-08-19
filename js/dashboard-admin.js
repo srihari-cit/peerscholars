@@ -247,9 +247,13 @@ function renderSessions(state) {
       </form>
     </div>
     <div class="dash-panel"><h2>All sessions</h2>
-      <table class="data-table"><thead><tr><th>Date</th><th>Subject</th><th>Status</th><th>Actions</th></tr></thead>
+      <p class="field-hint">Payment ($12.99 parent / $9 tutor) releases automatically when <strong>both</strong> parent and tutor confirm. Disputed sessions need admin review.</p>
+      <table class="data-table"><thead><tr><th>Date</th><th>Subject</th><th>Status</th><th>Parent</th><th>Tutor</th><th>Payment</th><th>Actions</th></tr></thead>
       <tbody>${state.sessions.map((s) => `<tr>
         <td>${PSUtils.formatDate(s.date)}</td><td>${PSUtils.esc(s.subject)}</td><td>${PSUtils.esc(s.status)}</td>
+        <td>${s.parentConfirmed ? '✓' : '—'}</td>
+        <td>${s.tutorConfirmed ? '✓' : '—'}</td>
+        <td>${PSUtils.esc(s.paymentStatus || 'pending')}</td>
         <td><select data-session-status="${s.id}">${PS_CONFIG.SESSION_STATUSES.map((st) => `<option ${s.status === st ? 'selected' : ''}>${st}</option>`).join('')}</select></td>
       </tr>`).join('')}</tbody></table>
     </div>`;
@@ -285,8 +289,14 @@ function bindSessions(state) {
 
   document.querySelectorAll('[data-session-status]').forEach((sel) => {
     sel.addEventListener('change', () => {
-      PSStore.updateSession(sel.dataset.sessionStatus, { status: sel.value });
-      if (sel.value === 'Completed') PSStore.recordPayment(sel.dataset.sessionStatus);
+      const sessionId = sel.dataset.sessionStatus;
+      PSStore.updateSession(sessionId, { status: sel.value });
+      if (sel.value === 'Completed') {
+        const session = PSStore.getState().sessions.find((s) => s.id === sessionId);
+        if (session?.parentConfirmed && session?.tutorConfirmed) {
+          PSStore.recordPayment(sessionId);
+        }
+      }
     });
   });
 }
