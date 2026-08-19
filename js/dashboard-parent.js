@@ -103,7 +103,9 @@ function renderMatchResults(request, student, matches, state) {
 function renderMatchCard(result, request) {
   const t = result.tutor;
   const grades = (t.gradesCanTeach || []).join(', ');
-  const shared = result.sharedInterestLabels.join(' · ') || '—';
+  const sharedLine = result.sharedInterests.length
+    ? `💡 ${result.sharedInterests.length} shared interest${result.sharedInterests.length !== 1 ? 's' : ''}: ${PSUtils.esc(shared)}`
+    : '💡 Qualified match by subject, grade & schedule';
   return `<article class="match-card" data-tutor-id="${t.id}">
     <div class="match-card-head">
       <h3>${PSUtils.esc(t.firstName)} <span class="match-grade">Grade ${PSUtils.esc(t.grade)}</span></h3>
@@ -112,7 +114,7 @@ function renderMatchCard(result, request) {
     <p class="match-school">${PSUtils.esc(t.school)}</p>
     <p class="match-subjects">${PSUtils.esc(t.subjects)} · Grades ${PSUtils.esc(grades)}</p>
     <p class="match-score">⭐ ${result.matchPercent}% Match</p>
-    <p class="match-shared">💡 ${result.sharedInterests.length} shared interest${result.sharedInterests.length !== 1 ? 's' : ''}: ${PSUtils.esc(shared)}</p>
+    <p class="match-shared">${sharedLine}</p>
     <p class="match-avail">🕒 ${PSUtils.esc(result.availabilityDisplay.join(', ') || t.availability)}</p>
     <p class="match-format">Online · Google Meet</p>
     <p class="match-why">${PSUtils.esc(result.explanation)}</p>
@@ -126,7 +128,7 @@ function renderMatchCard(result, request) {
 function renderNoMatchPanel(request) {
   return `<div class="dash-panel">
     <h2>We couldn't find a perfect match yet.</h2>
-    <p>We're looking for a tutor who matches your child's subject, grade, interests, and availability.</p>
+    <p>We're looking for a tutor who matches your child's subject, grade, and availability. Shared interests are a bonus — not required.</p>
     <div class="btn-row">
       <button class="btn btn-secondary btn-small" data-expand-availability>Expand Availability</button>
       <button class="btn btn-secondary btn-small" onclick="location.href='mailto:support@peerscholars.com'">Ask PeerScholars to Help</button>

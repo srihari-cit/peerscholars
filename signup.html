@@ -44,13 +44,13 @@
           <div class="signup-role-picker">
             <button type="button" class="signup-role-btn" data-role="family">
               <span class="role-icon" aria-hidden="true">👨‍👩‍👧</span>
-              <span>Parent / Family</span>
-              <span class="role-desc">Find a tutor — $12.99/hour online</span>
+              <span>I'm a Parent / Family</span>
+              <span class="role-desc">Find a tutor for my child — $12.99/hour online</span>
             </button>
             <button type="button" class="signup-role-btn" data-role="tutor">
               <span class="role-icon" aria-hidden="true">🎓</span>
-              <span>Tutor</span>
-              <span class="role-desc">High school student — earn $9/hour</span>
+              <span>I'm a Tutor</span>
+              <span class="role-desc">High school student — earn $9/hour tutoring</span>
             </button>
           </div>
         </div>
@@ -64,6 +64,10 @@
 
           <!-- Parent / Family -->
           <div id="family-fields" hidden>
+            <div class="signup-role-banner signup-role-banner-family">
+              <p class="signup-role-banner-title">For parents &amp; students</p>
+              <p>We match your child with a verified tutor by <strong>subject, grade, and schedule</strong>. Shared interests are a nice bonus — but there may not always be a perfect interest match, and that's completely okay.</p>
+            </div>
             <p class="form-divider" style="margin-top:0;">Your account</p>
             <div class="form-row half">
               <div class="form-row" style="margin:0"><label for="parent-first-name">Your first name *</label><input id="parent-first-name" name="parent-first-name" autocomplete="given-name" required></div>
@@ -90,16 +94,21 @@
 
             <div class="form-row signup-avail-block">
               <label>When is your child free? *</label>
-              <p class="field-hint availability-instruction">Check a day, pick start &amp; end from the menu (7:00 AM–9:00 PM). Tap <strong>+ Add time</strong> for more slots.</p>
+              <p class="field-hint availability-instruction">Check days (or <strong>Select all days</strong>), then pick times from the menu.</p>
               <label class="avail-select-all-days"><input type="checkbox" id="family-select-all-days" data-avail-select-all="family-availability"> Select all days</label>
               <div id="family-availability"></div>
             </div>
 
+            <label class="signup-consent"><input type="checkbox" id="parent-match-flex" required> I understand PeerScholars matches by subject, grade, and availability first. I'm okay if a tutor doesn't share my child's exact interests — what matters most is qualified help.</label>
             <label class="signup-consent"><input type="checkbox" id="parent-consent" required> I agree to online tutoring via Google Meet at $12.99/hour. PeerScholars may contact me about matching and scheduling.</label>
           </div>
 
           <!-- Tutor -->
           <div id="tutor-fields" hidden>
+            <div class="signup-role-banner signup-role-banner-tutor">
+              <p class="signup-role-banner-title">I'm a Tutor</p>
+              <p>Welcome! Tell us the basics below — about <strong>1 minute</strong>. We'll review your application, email your parent/guardian to confirm, and follow up with next steps. You don't need a perfect interest match with every student; subject and grade fit come first.</p>
+            </div>
             <p class="form-divider" style="margin-top:0;">Your account</p>
             <div class="form-row half">
               <div class="form-row" style="margin:0"><label for="tutor-first-name">First name *</label><input id="tutor-first-name" name="tutor-first-name" autocomplete="given-name" required></div>
@@ -149,7 +158,7 @@
 
             <div class="form-row signup-avail-block">
               <label>When can you tutor? *</label>
-              <p class="field-hint availability-instruction">Check a day, pick start &amp; end from the menu (7:00 AM–9:00 PM). Tap <strong>+ Add time</strong> for more slots.</p>
+              <p class="field-hint availability-instruction">Check days (or <strong>Select all days</strong>), then pick times from the menu.</p>
               <label class="avail-select-all-days"><input type="checkbox" id="tutor-select-all-days" data-avail-select-all="tutor-availability"> Select all days</label>
               <div id="tutor-availability"></div>
             </div>

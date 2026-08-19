@@ -284,6 +284,29 @@
   font-size: 0.875rem;
   line-height: 1.45;
 }
+.signup-role-banner {
+  margin: 0 0 1.15rem;
+  padding: 1rem 1.1rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--gray-200);
+  line-height: 1.55;
+  font-size: 0.9rem;
+}
+.signup-role-banner-family {
+  background: linear-gradient(135deg, #eef4ff 0%, #f8fbff 100%);
+  border-color: #c8daf5;
+}
+.signup-role-banner-tutor {
+  background: linear-gradient(135deg, #ecfdf3 0%, #f6fffb 100%);
+  border-color: #b8e6cc;
+}
+.signup-role-banner-title {
+  margin: 0 0 0.4rem;
+  font-weight: 800;
+  font-size: 1rem;
+  color: var(--blue-900, #0f172a);
+}
+.signup-role-banner p { margin: 0; color: var(--text-light); }
 .signup-consent {
   display: flex;
   gap: 0.55rem;

@@ -115,6 +115,9 @@ function initSignupUI() {
 }
 
 function validateFamily() {
+  if (!form.querySelector('#parent-match-flex')?.checked) {
+    return 'Please confirm you understand how PeerScholars matching works.';
+  }
   if (!form.querySelector('#parent-consent')?.checked) {
     return 'Please confirm the agreement checkbox to continue.';
   }
@@ -270,6 +273,7 @@ async function submitFamily(fd) {
     interests: '',
     interestTags: [],
     notes: '',
+    matchFlexConsent: true,
   });
 
   PSStore.createTutoringRequest({
