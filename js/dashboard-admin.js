@@ -65,7 +65,7 @@ function renderApplications(state) {
         <td>${PSUtils.esc(t.firstName)} ${PSUtils.esc(t.lastName)}</td>
         <td>${PSUtils.esc(t.school)}</td>
         <td>${PSUtils.esc(PSUtils.tutorVerificationStage(t))}</td>
-        <td>${t.verified ? PSUtils.badge('✓ Verified', 'green') : PSUtils.badge(t.parentVerificationStatus || 'Pending', 'blue')}</td>
+        <td>${t.verified ? PSUtils.badge('✓ Verified', 'green') : PSUtils.badge(t.adminDecision || 'Pending', 'blue')}</td>
         <td><a href="admin-dashboard.html?tab=verification&tutor=${t.id}">Review</a></td>
       </tr>`).join('')}</tbody></table>
     </div>`;
@@ -78,18 +78,8 @@ function renderVerification(state) {
 
   if (!tutor) return '<p class="field-hint">No tutor applications yet.</p>';
 
-  const schoolIdData = tutor.schoolIdData || tutor.schoolDocData;
-  const schoolIdName = tutor.schoolIdName || tutor.schoolDocName;
-  const parentName =
-    tutor.parentName ||
-    [tutor.parentFirstName, tutor.parentLastName].filter(Boolean).join(' ') ||
-    '—';
-  const parentStatus = tutor.parentVerificationStatus || 'Pending';
-  const parentVerifiedDate = tutor.parentVerifiedAt
-    ? new Date(tutor.parentVerifiedAt).toLocaleString()
-    : '—';
-
   const adminDecisions = ['Pending', 'Verified', 'Needs More Information', 'Rejected'];
+  const tutorUser = state.users.find((u) => u.id === tutor.userId);
 
   return `
     <div class="dash-panel">
@@ -97,42 +87,17 @@ function renderVerification(state) {
       <table class="data-table">
         <tbody>
           <tr><th>Tutor name</th><td>${PSUtils.esc(tutor.firstName)} ${PSUtils.esc(tutor.lastName)}</td></tr>
+          <tr><th>Email</th><td>${PSUtils.esc(tutorUser?.email || '—')}</td></tr>
           <tr><th>School</th><td>${PSUtils.esc(tutor.school)}</td></tr>
           <tr><th>Grade</th><td>${PSUtils.esc(tutor.grade)}</td></tr>
-          <tr><th>Parent name</th><td>${PSUtils.esc(parentName)}</td></tr>
-          <tr><th>Parent email</th><td>${PSUtils.esc(tutor.parentEmail || '—')}</td></tr>
-          <tr><th>Parent phone</th><td>${PSUtils.esc(tutor.parentPhone || '—')}</td></tr>
-          <tr><th>School ID uploaded</th><td>${tutor.schoolIdUploaded || schoolIdData ? 'Yes' : 'No'}</td></tr>
-          <tr><th>Tutor photo uploaded</th><td>${tutor.tutorPhotoUploaded || tutor.tutorPhotoData ? 'Yes' : 'No'}</td></tr>
-          <tr><th>Parent verification</th><td>${PSUtils.esc(parentStatus)}</td></tr>
-          <tr><th>Parent verification date</th><td>${PSUtils.esc(parentVerifiedDate)}</td></tr>
+          <tr><th>City</th><td>${PSUtils.esc(tutor.city || '—')}</td></tr>
+          <tr><th>Subjects</th><td>${PSUtils.esc(tutor.subjects || '—')}</td></tr>
+          <tr><th>Grades can teach</th><td>${PSUtils.esc((tutor.gradesCanTeach || []).join(', ') || '—')}</td></tr>
+          <tr><th>Availability</th><td>${PSUtils.esc(tutor.availability || '—')}</td></tr>
           <tr><th>Application status</th><td>${PSUtils.esc(tutor.applicationStatus || '—')}</td></tr>
+          <tr><th>Code of Conduct</th><td>${tutor.codeOfConductAccepted ? 'Accepted' : 'Not yet'}</td></tr>
         </tbody>
       </table>
-    </div>
-
-    <div class="dash-panel admin-private-docs">
-      <h3>Private verification materials <span class="field-hint">(admin only — never public)</span></h3>
-      <div class="verify-doc-grid">
-        <div>
-          <h4>School ID</h4>
-          ${
-            schoolIdData
-              ? `<img src="${schoolIdData}" alt="School ID" class="verify-doc-preview" />
-                 <p class="field-hint">${PSUtils.esc(schoolIdName || '')}</p>`
-              : '<p class="field-hint">Not uploaded</p>'
-          }
-        </div>
-        <div>
-          <h4>Tutor verification photo</h4>
-          ${
-            tutor.tutorPhotoData
-              ? `<img src="${tutor.tutorPhotoData}" alt="Tutor verification photo" class="verify-doc-preview" />
-                 <p class="field-hint">${PSUtils.esc(tutor.tutorPhotoName || '')}</p>`
-              : '<p class="field-hint">Not uploaded</p>'
-          }
-        </div>
-      </div>
     </div>
 
     <div class="dash-panel">
@@ -149,7 +114,7 @@ function renderVerification(state) {
         <button class="btn btn-secondary btn-small" data-suspend="true">Suspend tutor</button>
         <button class="btn btn-secondary btn-small" data-suspend="false">Reactivate tutor</button>
       </div>
-      <p class="field-hint" style="margin-top:0.75rem;">A tutor receives the ✓ PeerScholars Verified Tutor badge only when parent verification is complete, both photos are uploaded, Code of Conduct is accepted, and admin decision is Verified.</p>
+      <p class="field-hint" style="margin-top:0.75rem;">A tutor receives the ✓ PeerScholars Verified Tutor badge when admin decision is Verified and the Code of Conduct is accepted. No school ID or face photo is required.</p>
     </div>
 
     <input type="hidden" id="current-tutor-id" value="${tutor.id}">

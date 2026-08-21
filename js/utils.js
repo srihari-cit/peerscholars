@@ -130,10 +130,8 @@ The PeerScholars Team`;
 
   tutorVerificationStage(tutor) {
     if (tutor.verified) return 'Verified';
-    if (tutor.adminDecision === 'Verified' || tutor.adminDecision === 'Needs More Information')
-      return 'Final Admin Review';
-    if (PSStore.isParentVerified(tutor)) return 'Admin Review';
-    if (tutor.applicationSubmittedAt) return 'Parent Verification Pending';
+    if (tutor.adminDecision === 'Verified' && !tutor.codeOfConductAccepted) return 'Code of Conduct';
+    if (tutor.applicationSubmittedAt) return 'Admin Review';
     return 'Application Submitted';
   },
 

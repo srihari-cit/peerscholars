@@ -13,19 +13,9 @@ window.PS_CONFIG = {
   ],
   VERIFICATION_STAGES: [
     'Application Submitted',
-    'Parent/Guardian Verification',
-    'School Enrollment Verification',
-    'PeerScholars Interview',
-    'Final Admin Review',
+    'Admin Review',
+    'Code of Conduct',
     'Verified',
-  ],
-  SCHOOL_DOC_STATUSES: [
-    'Not submitted',
-    'Submitted',
-    'Under review',
-    'Approved',
-    'Rejected',
-    'Needs another document',
   ],
   SESSION_STATUSES: [
     'Scheduled',

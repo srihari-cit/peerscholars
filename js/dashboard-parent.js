@@ -7,6 +7,20 @@ document.addEventListener('DOMContentLoaded', () => {
   renderParentDashboard(user, root, welcome);
 });
 
+function renderDashboardPreview() {
+  return `
+    <div class="dash-panel parent-dashboard-preview">
+      <p class="eyebrow" style="margin:0 0 0.35rem;font-size:0.72rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-light);">Sample preview</p>
+      <h2 style="margin:0 0 0.75rem;font-size:1.05rem;">What your dashboard will look like</h2>
+      <div class="preview-stat-row">
+        <div class="preview-stat"><span class="preview-stat-label">Next session</span><strong>Tue · 4:00 PM</strong></div>
+        <div class="preview-stat"><span class="preview-stat-label">Tutor</span><strong>Alex M. · Math</strong></div>
+        <div class="preview-stat"><span class="preview-stat-label">Attendance</span><strong>100%</strong></div>
+      </div>
+      <p class="field-hint" style="margin:0.65rem 0 0;">Mock data for illustration — your real stats appear after matching.</p>
+    </div>`;
+}
+
 function renderParentDashboard(user, root, welcome) {
   const state = PSStore.getState();
   const students = PSStore.getStudentsByParent(user.id);
@@ -19,6 +33,8 @@ function renderParentDashboard(user, root, welcome) {
   let html = welcome
     ? '<div class="alert alert-success">Welcome! Complete payment below to start matching with verified tutors.</div>'
     : '';
+
+  html += renderDashboardPreview();
 
   if (!student || !request) {
     root.innerHTML = html + '<p class="field-hint">No student profile found. <a href="signup.html?role=family">Sign up</a></p>';

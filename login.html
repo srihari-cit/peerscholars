@@ -17,19 +17,12 @@
         <h1 style="margin:0 0 0.5rem;font-size:1.35rem;">Log in to PeerScholars</h1>
         <p class="field-hint" style="margin-bottom:1.25rem;">Parents, tutors, and administrators use the same login page.</p>
         <form id="login-form" class="inline-form">
-          <div class="form-row"><label for="email">Email</label><input type="email" id="email" name="email" required autocomplete="email"></div>
-          <div class="form-row"><label for="password">Password</label><input type="password" id="password" name="password" required autocomplete="current-password"></div>
+          <div class="form-row"><label for="email">Email</label><input type="email" id="email" name="email" required autocomplete="email" placeholder="Use the email from sign-up"></div>
+          <div class="form-row"><label for="password">Password <span class="field-hint">(admin only)</span></label><input type="password" id="password" name="password" autocomplete="current-password" placeholder="Leave blank for student &amp; tutor accounts"></div>
           <p class="form-error" id="login-error" hidden></p>
           <button type="submit" class="btn btn-primary btn-full">Log In</button>
         </form>
-        <p style="text-align:center;margin-top:1rem;font-size:0.875rem;">No account? <a href="signup.html">Sign up</a></p>
-        <div class="login-demo-hint">
-          <strong>Demo accounts:</strong><br>
-          Parent: parent@demo.com / demo123<br>
-          Tutor: tutor@demo.com / demo123<br>
-          Admin: admin@peerscholars.com / admin123<br>
-          <a href="demo.html">View full demo walkthrough →</a>
-        </div>
+        <p style="text-align:center;margin-top:1rem;font-size:0.875rem;">No account? <a href="signup.html">Sign up as Student or Tutor</a></p>
       </div>
     </div>
   </main>

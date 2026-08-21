@@ -31,9 +31,9 @@
   <main>
     <section class="page-hero center compact">
       <div class="container">
-        <p class="eyebrow">Quick sign-up · about 1 minute</p>
+        <p class="eyebrow">Fast sign-up · under a minute</p>
         <h1>Get started with PeerScholars</h1>
-        <p id="signup-intro">Choose whether you're a family looking for a tutor, or a high school student who wants to tutor.</p>
+        <p id="signup-intro">Choose a role and fill in just the basics — no long forms.</p>
       </div>
     </section>
 
@@ -43,13 +43,13 @@
           <p class="form-divider" style="margin-top:0;">Who are you signing up as?</p>
           <div class="signup-role-picker">
             <button type="button" class="signup-role-btn" data-role="family">
-              <span class="role-icon" aria-hidden="true">👨‍👩‍👧</span>
-              <span>I'm a Parent / Family</span>
-              <span class="role-desc">Find a tutor for my child — $12.99/hour online</span>
+              <span class="role-icon" aria-hidden="true">📚</span>
+              <span>Sign up as Student</span>
+              <span class="role-desc">K–8 student — find a tutor at $12.99/hour online</span>
             </button>
             <button type="button" class="signup-role-btn" data-role="tutor">
               <span class="role-icon" aria-hidden="true">🎓</span>
-              <span>I'm a Tutor</span>
+              <span>Sign up as Tutor</span>
               <span class="role-desc">High school student — earn $9/hour tutoring</span>
             </button>
           </div>
@@ -66,22 +66,21 @@
           <div id="family-fields" hidden>
             <div class="signup-role-banner signup-role-banner-family">
               <p class="signup-role-banner-title">For parents &amp; students</p>
-              <p>We match your child with a verified tutor by <strong>subject, grade, and schedule</strong>. Shared interests are a nice bonus — but there may not always be a perfect interest match, and that's completely okay.</p>
+              <p>Quick basics only. We match by <strong>subject, grade, and schedule</strong> — then reach out with next steps.</p>
             </div>
             <p class="form-divider" style="margin-top:0;">Your account</p>
             <div class="form-row half">
-              <div class="form-row" style="margin:0"><label for="parent-first-name">Your first name *</label><input id="parent-first-name" name="parent-first-name" autocomplete="given-name" required></div>
+              <div class="form-row" style="margin:0"><label for="parent-full-name">Parent first and last name *</label><input id="parent-full-name" name="parent-full-name" autocomplete="name" required placeholder="e.g. Jordan Lee"></div>
               <div class="form-row" style="margin:0"><label for="family-email">Email *</label><input type="email" id="family-email" name="email" autocomplete="email" required></div>
             </div>
             <div class="form-row half">
-              <div class="form-row" style="margin:0"><label for="family-password">Password *</label><input type="password" id="family-password" name="password" minlength="6" autocomplete="new-password" required placeholder="6+ characters"></div>
-              <div class="form-row" style="margin:0"><label for="family-phone">Phone *</label><input type="tel" id="family-phone" name="phone" autocomplete="tel" required></div>
+              <div class="form-row" style="margin:0"><label for="family-phone">Phone <span class="field-hint">(optional)</span></label><input type="tel" id="family-phone" name="phone" autocomplete="tel"></div>
             </div>
-            <div class="form-row"><label for="city">City *</label><input id="city" name="city" autocomplete="address-level2" required placeholder="e.g. Bellevue"></div>
+            <div class="form-row"><label for="city">City <span class="field-hint">(optional)</span></label><input id="city" name="city" autocomplete="address-level2" placeholder="e.g. Bellevue"></div>
 
             <p class="form-divider">Your child</p>
             <div class="form-row half">
-              <div class="form-row" style="margin:0"><label for="child-first-name">Child's first name *</label><input id="child-first-name" name="child-first-name" required></div>
+              <div class="form-row" style="margin:0"><label for="child-full-name">Student first and last name *</label><input id="child-full-name" name="child-full-name" required placeholder="e.g. Sam Lee"></div>
               <div class="form-row" style="margin:0"><label for="child-grade">Grade *</label>
                 <select id="child-grade" name="child-grade" required><option value="">Select</option><option>K</option><option>1st</option><option>2nd</option><option>3rd</option><option>4th</option><option>5th</option><option>6th</option><option>7th</option><option>8th</option></select>
               </div>
@@ -95,28 +94,23 @@
             <div class="form-row signup-avail-block">
               <label>When is your child free? *</label>
               <p class="field-hint availability-instruction">Check days (or <strong>Select all days</strong>), then pick times from the menu.</p>
-              <label class="avail-select-all-days"><input type="checkbox" id="family-select-all-days" data-avail-select-all="family-availability"> Select all days</label>
+              <label class="avail-select-all-days"><input type="checkbox" id="family-select-all-days" data-avail-select-all="family-availability-schedule"> Select all days</label>
               <div id="family-availability"></div>
             </div>
 
-            <label class="signup-consent"><input type="checkbox" id="parent-match-flex" required> I understand PeerScholars matches by subject, grade, and availability first. I'm okay if a tutor doesn't share my child's exact interests — what matters most is qualified help.</label>
-            <label class="signup-consent"><input type="checkbox" id="parent-consent" required> I agree to online tutoring via Google Meet at $12.99/hour. PeerScholars may contact me about matching and scheduling.</label>
+            <label class="signup-consent"><input type="checkbox" id="parent-consent" required> I agree to online tutoring via Google Meet at $12.99/hour. PeerScholars may contact me about matching. Matching is by subject, grade, and availability first.</label>
           </div>
 
           <!-- Tutor -->
           <div id="tutor-fields" hidden>
             <div class="signup-role-banner signup-role-banner-tutor">
               <p class="signup-role-banner-title">I'm a Tutor</p>
-              <p>Welcome! Tell us the basics below — about <strong>1 minute</strong>. We'll review your application, email your parent/guardian to confirm, and follow up with next steps. You don't need a perfect interest match with every student; subject and grade fit come first.</p>
+              <p>Just the basics — name, school, subjects, and schedule. We'll review and follow up.</p>
             </div>
             <p class="form-divider" style="margin-top:0;">Your account</p>
             <div class="form-row half">
-              <div class="form-row" style="margin:0"><label for="tutor-first-name">First name *</label><input id="tutor-first-name" name="tutor-first-name" autocomplete="given-name" required></div>
-              <div class="form-row" style="margin:0"><label for="tutor-last-name">Last name *</label><input id="tutor-last-name" name="tutor-last-name" autocomplete="family-name" required></div>
-            </div>
-            <div class="form-row half">
+              <div class="form-row" style="margin:0"><label for="tutor-full-name">Tutor first and last name *</label><input id="tutor-full-name" name="tutor-full-name" autocomplete="name" required placeholder="e.g. Jordan Lee"></div>
               <div class="form-row" style="margin:0"><label for="tutor-email">Email *</label><input type="email" id="tutor-email" name="tutor-email" autocomplete="email" required></div>
-              <div class="form-row" style="margin:0"><label for="tutor-password">Password *</label><input type="password" id="tutor-password" name="tutor-password" minlength="6" autocomplete="new-password" required placeholder="6+ characters"></div>
             </div>
             <div class="form-row half">
               <div class="form-row" style="margin:0"><label for="tutor-grade">Your grade *</label>
@@ -124,12 +118,7 @@
               </div>
               <div class="form-row" style="margin:0"><label for="school">High school *</label><input id="school" name="school" required></div>
             </div>
-            <div class="form-row"><label for="tutor-city">City *</label><input id="tutor-city" name="city" autocomplete="address-level2" required placeholder="e.g. Bellevue"></div>
-
-            <div class="form-row">
-              <label for="parent-guardian-email">Parent/guardian email *</label>
-              <input type="email" id="parent-guardian-email" name="parent-guardian-email" required placeholder="We'll email them to confirm">
-            </div>
+            <div class="form-row"><label for="tutor-city">City <span class="field-hint">(optional)</span></label><input id="tutor-city" name="city" autocomplete="address-level2" placeholder="e.g. Bellevue"></div>
 
             <p class="form-divider">What you can tutor</p>
             <div class="form-row">
@@ -149,22 +138,18 @@
                 <label><input type="checkbox" name="grades-can-teach" value="6th"> 6</label>
                 <label><input type="checkbox" name="grades-can-teach" value="7th"> 7</label>
                 <label><input type="checkbox" name="grades-can-teach" value="8th"> 8</label>
-                <label><input type="checkbox" name="grades-can-teach" value="9th"> 9</label>
-                <label><input type="checkbox" name="grades-can-teach" value="10th"> 10</label>
-                <label><input type="checkbox" name="grades-can-teach" value="11th"> 11</label>
-                <label><input type="checkbox" name="grades-can-teach" value="12th"> 12</label>
               </div>
             </div>
 
             <div class="form-row signup-avail-block">
               <label>When can you tutor? *</label>
               <p class="field-hint availability-instruction">Check days (or <strong>Select all days</strong>), then pick times from the menu.</p>
-              <label class="avail-select-all-days"><input type="checkbox" id="tutor-select-all-days" data-avail-select-all="tutor-availability"> Select all days</label>
+              <label class="avail-select-all-days"><input type="checkbox" id="tutor-select-all-days" data-avail-select-all="tutor-availability-schedule"> Select all days</label>
               <div id="tutor-availability"></div>
             </div>
 
             <input type="hidden" name="weekly-capacity" value="3">
-            <label class="signup-consent"><input type="checkbox" id="tutor-consent" required> I agree to tutor online via Google Meet and follow the <a href="index.html#code-of-conduct">Tutor Code of Conduct</a>. PeerScholars will follow up about verification.</label>
+            <label class="signup-consent"><input type="checkbox" id="tutor-consent" required> I agree to tutor online via Google Meet and follow the <a href="index.html#code-of-conduct">Tutor Code of Conduct</a>.</label>
           </div>
 
           <button type="submit" class="btn btn-primary btn-full" id="signup-submit">Submit</button>

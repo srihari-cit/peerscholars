@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }).join('');
 
   root.innerHTML = `
-    ${welcome ? '<div class="alert alert-success">Application submitted! Complete verification steps below.</div>' : ''}
+    ${welcome ? '<div class="alert alert-success">Application submitted! We’ll review it shortly — accept the Code of Conduct below when you’re ready.</div>' : ''}
     ${tutor.suspended ? '<div class="alert alert-error">Your account is suspended. Contact support@peerscholars.com.</div>' : ''}
     ${tutor.verified ? `<div class="alert alert-success">${PSUtils.verifiedTutorBadge()} You can receive matches and teach sessions.</div>` : ''}
 
@@ -47,9 +47,6 @@ document.addEventListener('DOMContentLoaded', () => {
       <p class="field-hint">Current stage: <strong>${PSUtils.esc(stage)}</strong></p>
       <ul class="status-list">${stages}</ul>
       <div style="margin-top:1rem;">
-        <p><strong>Parent/guardian:</strong> ${PSUtils.esc(tutor.parentVerificationStatus || 'Parent Verification Pending')}</p>
-        <p><strong>School ID:</strong> ${tutor.schoolIdUploaded || tutor.schoolIdData ? 'Uploaded ✓' : 'Not uploaded'}</p>
-        <p><strong>Verification photo:</strong> ${tutor.tutorPhotoUploaded || tutor.tutorPhotoData ? 'Uploaded ✓' : 'Not uploaded'}</p>
         <p><strong>Admin review:</strong> ${PSUtils.esc(tutor.adminDecision || 'Pending')}</p>
         <p><strong>Code of Conduct:</strong> ${tutor.codeOfConductAccepted ? 'Accepted' : 'Not yet accepted'}</p>
       </div>

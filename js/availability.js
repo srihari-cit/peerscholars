@@ -247,6 +247,7 @@ window.PSAvailability = {
       const cb = row.querySelector('[data-avail-day]');
       const panel = row.querySelector('.availability-slots-panel');
       if (cb) cb.checked = false;
+      row.classList.remove('is-active');
       if (!panel) return;
       panel.hidden = true;
       panel.querySelectorAll('.availability-slot-row').forEach((slotRow, index) => {
@@ -271,6 +272,32 @@ window.PSAvailability = {
         </div>
       </div>`
     ).join('')}</div>`;
+  },
+
+  syncDayRow(cb) {
+    const row = cb.closest('.availability-day-row');
+    const panel = row?.querySelector('.availability-slots-panel');
+    if (!row || !panel) return;
+    const on = !!cb.checked;
+    row.classList.toggle('is-active', on);
+    panel.hidden = !on;
+    if (on && !panel.querySelector('.availability-slot-row')) {
+      panel.insertAdjacentHTML('afterbegin', this.slotRowHtml(cb.value));
+      this.syncRemoveButtons(panel);
+    }
+  },
+
+  setAllDays(schedule, checked) {
+    const dayBoxes = [...schedule.querySelectorAll('[data-avail-day]')];
+    // Batch UI in one pass so Mon–Sun all box open together (not one-by-one).
+    schedule.classList.add('avail-batching');
+    dayBoxes.forEach((cb) => {
+      cb.checked = checked;
+    });
+    dayBoxes.forEach((cb) => this.syncDayRow(cb));
+    // Force one reflow, then reveal all selected days together.
+    void schedule.offsetHeight;
+    schedule.classList.remove('avail-batching');
   },
 
   initDayTimePickers(root = document) {
@@ -300,18 +327,8 @@ window.PSAvailability = {
       });
 
       schedule.querySelectorAll('[data-avail-day]').forEach((cb) => {
-        const sync = () => {
-          const row = cb.closest('.availability-day-row');
-          const panel = row?.querySelector('.availability-slots-panel');
-          if (!panel) return;
-          panel.hidden = !cb.checked;
-          if (cb.checked && !panel.querySelector('.availability-slot-row')) {
-            panel.insertAdjacentHTML('afterbegin', this.slotRowHtml(cb.value));
-            this.syncRemoveButtons(panel);
-          }
-        };
-        cb.addEventListener('change', sync);
-        sync();
+        cb.addEventListener('change', () => this.syncDayRow(cb));
+        this.syncDayRow(cb);
       });
     });
 
@@ -328,15 +345,13 @@ window.PSAvailability = {
     const dayBoxes = [...schedule.querySelectorAll('[data-avail-day]')];
     const syncSelectAll = () => {
       selectAllCheckbox.checked = dayBoxes.length > 0 && dayBoxes.every((d) => d.checked);
+      selectAllCheckbox.indeterminate =
+        dayBoxes.some((d) => d.checked) && !dayBoxes.every((d) => d.checked);
     };
 
     selectAllCheckbox.addEventListener('change', () => {
-      dayBoxes.forEach((cb) => {
-        if (cb.checked !== selectAllCheckbox.checked) {
-          cb.checked = selectAllCheckbox.checked;
-          cb.dispatchEvent(new Event('change', { bubbles: true }));
-        }
-      });
+      this.setAllDays(schedule, selectAllCheckbox.checked);
+      syncSelectAll();
     });
 
     dayBoxes.forEach((cb) => {

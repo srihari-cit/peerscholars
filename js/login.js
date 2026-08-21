@@ -7,9 +7,9 @@ document.addEventListener('DOMContentLoaded', () => {
   form?.addEventListener('submit', (e) => {
     e.preventDefault();
     const fd = new FormData(form);
-    const result = PSStore.login(fd.get('email'), fd.get('password'));
+    const result = PSStore.login(fd.get('email'), fd.get('password') || '');
     if (!result || result.error) {
-      errorEl.textContent = result?.error || 'Invalid email or password.';
+      errorEl.textContent = result?.error || 'Could not log in. Please try again.';
       errorEl.hidden = false;
       return;
     }

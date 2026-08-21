@@ -130,11 +130,6 @@
           school: 'Bellevue High School',
           city: 'Bellevue',
           state: 'WA',
-          parentFirstName: 'Pat',
-          parentLastName: 'Lee',
-          parentName: 'Pat Lee',
-          parentEmail: 'parent.lee@email.com',
-          parentPhone: '(425) 555-0199',
           subjects: 'Math, Science',
           gradesCanTeach: ['3rd', '4th', '5th', '6th'],
           weeklyCapacity: 4,
@@ -150,20 +145,8 @@
           interests: 'Soccer, Coding, Science',
           whyTutor: 'I enjoy explaining concepts in simple ways.',
           experience: 'Helped classmates and younger siblings with homework.',
-          parentConsent: true,
           applicationSubmittedAt: now(),
-          applicationStatus: 'Parent Verified',
-          parentVerificationStatus: 'Parent Verified',
-          parentVerifiedAt: now(),
-          schoolIdUploaded: true,
-          schoolIdName: 'demo_student_id.jpg',
-          schoolIdData: null,
-          tutorPhotoUploaded: true,
-          tutorPhotoName: 'demo_tutor_photo.jpg',
-          tutorPhotoData: null,
-          schoolDocStatus: 'Approved',
-          interviewStatus: 'Passed',
-          interviewNotes: 'Strong communicator. Explained fractions clearly.',
+          applicationStatus: 'Application Submitted',
           adminDecision: 'Verified',
           finalReviewStatus: 'Approved',
           codeOfConductAccepted: true,
@@ -321,7 +304,12 @@
 
   function login(email, password) {
     const user = findUserByEmail(email);
-    if (!user || user.password !== password) return null;
+    if (!user) return { error: 'No account found for this email. Please sign up first.' };
+    if (user.password) {
+      if (!password || user.password !== password) {
+        return { error: 'Invalid email or password.' };
+      }
+    }
     if (user.suspended) return { error: 'This account is suspended.' };
     setSession(user.id);
     return user;
@@ -336,7 +324,7 @@
     const user = {
       id: uid('user'),
       email: email.trim().toLowerCase(),
-      password,
+      password: password || '',
       role,
       createdAt: now(),
       ...profile,
@@ -357,18 +345,7 @@
       id: uid('tutor'),
       userId,
       applicationSubmittedAt: now(),
-      applicationStatus: 'Parent Verification Pending',
-      parentVerificationStatus: 'Parent Verification Pending',
-      parentVerifiedAt: null,
-      schoolIdUploaded: false,
-      schoolIdName: '',
-      schoolIdData: null,
-      tutorPhotoUploaded: false,
-      tutorPhotoName: '',
-      tutorPhotoData: null,
-      schoolDocStatus: 'Not submitted',
-      schoolDocName: '',
-      schoolDocData: null,
+      applicationStatus: 'Application Submitted',
       interviewStatus: 'Not scheduled',
       interviewNotes: '',
       adminDecision: 'Pending',
@@ -379,18 +356,6 @@
       createdAt: now(),
       ...data,
     };
-    if (profile.schoolIdData) {
-      profile.schoolIdUploaded = true;
-      profile.schoolDocStatus = 'Submitted';
-      profile.schoolDocName = profile.schoolIdName;
-      profile.schoolDocData = profile.schoolIdData;
-    }
-    if (profile.tutorPhotoData) profile.tutorPhotoUploaded = true;
-    if (profile.parentFirstName || profile.parentLastName) {
-      profile.parentName = [profile.parentFirstName, profile.parentLastName]
-        .filter(Boolean)
-        .join(' ');
-    }
     write((s) => s.tutorProfiles.push(profile));
     return profile;
   }
@@ -470,17 +435,13 @@
   }
 
   function isParentVerified(tutor) {
-    return ['Parent Verified', 'Confirmed'].includes(tutor.parentVerificationStatus);
+    // Legacy helper — parent verification is no longer required for signup.
+    return true;
   }
 
   function recomputeTutorVerified(tutor) {
-    const hasSchoolId = tutor.schoolIdUploaded || tutor.schoolIdData || tutor.schoolDocData;
-    const hasTutorPhoto = tutor.tutorPhotoUploaded || tutor.tutorPhotoData;
     return (
-      tutor.applicationSubmittedAt &&
-      isParentVerified(tutor) &&
-      hasSchoolId &&
-      hasTutorPhoto &&
+      !!tutor.applicationSubmittedAt &&
       tutor.adminDecision === 'Verified' &&
       tutor.codeOfConductAccepted &&
       !tutor.suspended
