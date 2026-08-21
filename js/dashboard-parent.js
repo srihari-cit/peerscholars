@@ -10,14 +10,23 @@ document.addEventListener('DOMContentLoaded', () => {
 function renderDashboardPreview() {
   return `
     <div class="dash-panel parent-dashboard-preview">
-      <p class="eyebrow" style="margin:0 0 0.35rem;font-size:0.72rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-light);">Sample preview</p>
-      <h2 style="margin:0 0 0.75rem;font-size:1.05rem;">What your dashboard will look like</h2>
+      <div class="parent-demo-header">
+        <p class="eyebrow" style="margin:0;font-size:0.72rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-light);">Demo preview</p>
+        <span class="dashboard-demo-badge">Sample data</span>
+      </div>
+      <h2 style="margin:0.35rem 0 0.75rem;font-size:1.05rem;">What your dashboard will look like</h2>
       <div class="preview-stat-row">
-        <div class="preview-stat"><span class="preview-stat-label">Next session</span><strong>Tue · 4:00 PM</strong></div>
+        <div class="preview-stat"><span class="preview-stat-label">Student</span><strong>Sam L. · Grade 5</strong></div>
         <div class="preview-stat"><span class="preview-stat-label">Tutor</span><strong>Alex M. · Math</strong></div>
+        <div class="preview-stat"><span class="preview-stat-label">Next session</span><strong>Tue · 4:00 PM</strong></div>
         <div class="preview-stat"><span class="preview-stat-label">Attendance</span><strong>100%</strong></div>
       </div>
-      <p class="field-hint" style="margin:0.65rem 0 0;">Mock data for illustration — your real stats appear after matching.</p>
+      <div class="parent-demo-session">
+        <strong>Last session</strong>
+        <span>Math · Fractions · Wed 4:00 PM</span>
+        <span class="badge badge-green">Completed</span>
+      </div>
+      <p class="field-hint" style="margin:0.65rem 0 0;">Illustration only — your real sessions and reports appear after matching.</p>
     </div>`;
 }
 

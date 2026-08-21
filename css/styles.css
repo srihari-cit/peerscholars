@@ -449,6 +449,18 @@ h3 { font-size: 1.0625rem; font-weight: 600; }
   font-size: 0.8125rem;
   font-weight: 600;
   color: var(--text-light);
+  flex: 1;
+}
+.dashboard-demo-badge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--primary, #2563eb);
+  background: color-mix(in srgb, var(--primary, #2563eb) 10%, var(--white));
+  border: 1px solid color-mix(in srgb, var(--primary, #2563eb) 25%, var(--gray-200));
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
 }
 .dashboard-layout-lg {
   grid-template-columns: 260px 1fr;
@@ -537,6 +549,11 @@ h3 { font-size: 1.0625rem; font-weight: 600; }
   font-size: 0.8125rem;
   font-weight: 600;
   color: var(--text-light);
+}
+.dashboard-attendance-cell.attended {
+  background: color-mix(in srgb, var(--green, #2e7d32) 12%, var(--white));
+  border-color: color-mix(in srgb, var(--green, #2e7d32) 35%, var(--gray-200));
+  color: var(--green, #2e7d32);
 }
 .dashboard-caption {
   text-align: center;

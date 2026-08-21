@@ -602,3 +602,23 @@
   color: var(--text-light);
   font-weight: 600;
 }
+.parent-demo-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.parent-demo-session {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  margin-top: 0.85rem;
+  padding: 0.65rem 0.75rem;
+  background: var(--white);
+  border-radius: 8px;
+  border: 1px solid var(--gray-200);
+  font-size: 0.85rem;
+}
+.parent-demo-session strong { font-size: 0.82rem; }
+.parent-demo-session > span:not(.badge) { color: var(--text-light); flex: 1; min-width: 140px; }
